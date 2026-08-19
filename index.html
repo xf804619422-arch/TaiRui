@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>泰瑞医疗 · 产品原型中心</title>
+  <style>
+    :root {
+      --primary: #2871f2;
+      --primary-deep: #174fbd;
+      --primary-soft: #eaf2ff;
+      --aqua: #1eafa4;
+      --aqua-soft: #e7f8f5;
+      --purple: #7367e8;
+      --purple-soft: #efedff;
+      --ink: #17253f;
+      --text: #53617a;
+      --muted: #8d99ad;
+      --line: #e6ecf5;
+      --surface: rgba(255,255,255,.88);
+      --shadow: 0 24px 70px rgba(33, 65, 119, .14);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 16%, rgba(47, 120, 243, .17), transparent 28%),
+        radial-gradient(circle at 88% 78%, rgba(30, 175, 164, .15), transparent 26%),
+        linear-gradient(145deg, #f4f8ff 0%, #eef4fb 52%, #f2faf8 100%);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .page::before,
+    .page::after {
+      content: "";
+      position: fixed;
+      z-index: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(1px);
+    }
+
+    .page::before {
+      width: 430px;
+      height: 430px;
+      top: -255px;
+      right: -125px;
+      border: 55px solid rgba(40,113,242,.06);
+    }
+
+    .page::after {
+      width: 330px;
+      height: 330px;
+      left: -210px;
+      bottom: -175px;
+      border: 45px solid rgba(30,175,164,.07);
+    }
+
+    .topbar {
+      position: relative;
+      z-index: 2;
+      height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(145deg, var(--primary), #2bb3be);
+      box-shadow: 0 11px 25px rgba(40,113,242,.25);
+    }
+    .brand-mark svg { width: 24px; height: 24px; }
+    .brand-copy strong { display: block; font-size: 16px; letter-spacing: .04em; }
+    .brand-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+
+    .version {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 11px;
+      color: var(--text);
+      background: rgba(255,255,255,.6);
+      backdrop-filter: blur(12px);
+      font-size: 10px;
+    }
+    .version i { width: 6px; height: 6px; border-radius: 50%; background: #19aa79; box-shadow: 0 0 0 4px rgba(25,170,121,.1); }
+
+    main {
+      position: relative;
+      z-index: 1;
+      width: min(1124px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 58px 0 64px;
+    }
+
+    .hero { max-width: 760px; margin: 0 auto; text-align: center; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid rgba(40,113,242,.12);
+      border-radius: 20px;
+      color: var(--primary);
+      background: rgba(255,255,255,.62);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+    .eyebrow svg { width: 14px; height: 14px; }
+    .hero h1 { margin: 20px 0 0; font-size: clamp(34px, 4.6vw, 54px); line-height: 1.12; letter-spacing: -.04em; }
+    .hero h1 span { color: transparent; background: linear-gradient(90deg, var(--primary), #388bdc 55%, var(--aqua)); -webkit-background-clip: text; background-clip: text; }
+    .hero p { max-width: 650px; margin: 17px auto 0; color: var(--text); font-size: 14px; line-height: 1.8; }
+
+    .scope-list { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .scope-list span { padding: 6px 10px; border-radius: 9px; color: var(--muted); background: rgba(255,255,255,.55); font-size: 10px; }
+
+    .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 48px; }
+    .portal-card {
+      position: relative;
+      min-height: 390px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 26px;
+      border: 1px solid rgba(255,255,255,.82);
+      border-radius: 26px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .portal-card:hover,
+    .portal-card:focus-visible {
+      transform: translateY(-7px);
+      border-color: rgba(40,113,242,.24);
+      box-shadow: 0 30px 85px rgba(33,65,119,.2);
+      outline: none;
+    }
+    .portal-card::after { content: ""; position: absolute; width: 190px; height: 190px; right: -100px; top: -115px; border: 28px solid currentColor; border-radius: 50%; opacity: .05; }
+    .portal-card.web { color: var(--purple); }
+    .portal-card.mini { color: var(--primary); }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .card-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 17px; color: var(--primary); background: var(--primary-soft); }
+    .web .card-icon { color: var(--purple); background: var(--purple-soft); }
+    .card-icon svg { width: 27px; height: 27px; }
+    .card-no { color: var(--muted); font-size: 10px; letter-spacing: .08em; }
+    .portal-card h2 { margin: 22px 0 0; color: var(--ink); font-size: 23px; letter-spacing: -.02em; }
+    .portal-card > p { min-height: 52px; margin: 9px 0 0; color: var(--text); font-size: 12px; line-height: 1.7; }
+
+    .preview {
+      position: relative;
+      height: 138px;
+      overflow: hidden;
+      margin-top: 19px;
+      border-radius: 17px;
+      background: linear-gradient(145deg, #eef5ff, #f7faff);
+    }
+    .web .preview { background: linear-gradient(145deg, #f2f0ff, #f8f9ff); }
+    .phone-art { position: absolute; width: 83px; height: 154px; left: 50%; top: 15px; transform: translateX(-50%); border: 4px solid #26344e; border-radius: 20px; background: #fff; box-shadow: 0 16px 28px rgba(35,57,97,.18); }
+    .phone-art::before { content: ""; position: absolute; width: 34px; height: 7px; left: 50%; top: 5px; transform: translateX(-50%); border-radius: 5px; background: #26344e; }
+    .phone-screen { position: absolute; inset: 16px 6px 8px; overflow: hidden; border-radius: 9px; background: #f4f7fc; }
+    .phone-hero { height: 43px; margin: 7px; border-radius: 7px; background: linear-gradient(135deg, var(--primary), #25aaa8); }
+    .phone-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; margin: 0 7px; }
+    .phone-grid i { height: 20px; border-radius: 5px; background: #fff; }
+    .phone-line { height: 7px; margin: 7px; border-radius: 5px; background: #dce6f6; box-shadow: 0 13px 0 #fff, 0 26px 0 #fff; }
+    .preview-orbit { position: absolute; width: 150px; height: 150px; border: 1px solid rgba(40,113,242,.12); border-radius: 50%; left: 50%; top: 12px; transform: translateX(-50%); }
+
+    .desktop-art { position: absolute; width: 84%; height: 112px; left: 8%; top: 20px; overflow: hidden; border: 4px solid #283650; border-radius: 11px 11px 7px 7px; background: #fff; box-shadow: 0 16px 28px rgba(45,51,102,.18); }
+    .desktop-art::after { content: ""; position: absolute; width: 80px; height: 7px; left: 50%; bottom: -17px; transform: translateX(-50%); border-radius: 4px; background: #283650; box-shadow: 0 -7px 0 -2px #283650; }
+    .desk-side { position: absolute; inset: 0 auto 0 0; width: 21%; background: #172844; }
+    .desk-side i { display: block; height: 5px; margin: 12px 7px 0; border-radius: 4px; background: rgba(255,255,255,.34); box-shadow: 0 15px 0 rgba(255,255,255,.19), 0 30px 0 rgba(255,255,255,.19), 0 45px 0 rgba(255,255,255,.19); }
+    .desk-content { position: absolute; left: 21%; right: 0; top: 0; bottom: 0; padding: 9px; background: #f3f6fb; }
+    .desk-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; }
+    .desk-stats i { height: 23px; border-radius: 4px; background: #fff; }
+    .desk-chart { height: 55px; margin-top: 6px; border-radius: 5px; background: #fff; }
+    .desk-chart::before { content: ""; display: block; width: 72%; height: 24px; margin: 15px 8px; border-bottom: 2px solid var(--purple); border-radius: 50%; transform: skewY(-7deg); }
+
+    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: auto; padding-top: 20px; }
+    .features { display: flex; flex-wrap: wrap; gap: 6px; }
+    .features span { padding: 5px 8px; border-radius: 8px; color: var(--text); background: #f3f6fb; font-size: 9px; }
+    .open-btn { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; color: var(--primary); font-size: 11px; font-weight: 700; }
+    .web .open-btn { color: var(--purple); }
+    .open-btn svg { width: 17px; height: 17px; transition: transform .2s ease; }
+    .portal-card:hover .open-btn svg { transform: translateX(4px); }
+
+    footer { position: relative; z-index: 1; display: flex; justify-content: center; gap: 8px; padding: 0 24px 30px; color: var(--muted); font-size: 10px; text-align: center; }
+    footer i { width: 1px; height: 12px; background: #cdd6e4; }
+
+    @media (max-width: 760px) {
+      .topbar { padding: 0 18px; }
+      .version { display: none; }
+      main { width: min(100% - 28px, 560px); padding-top: 38px; }
+      .hero h1 { font-size: 34px; }
+      .hero p { font-size: 12px; }
+      .portal-grid { grid-template-columns: 1fr; margin-top: 34px; }
+      .portal-card { min-height: 374px; padding: 21px; }
+      footer { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3.7 0 6.7 3 6.7 6.7 0 4.8-4.4 8.2-6.7 10.3-2.3-2.1-6.7-5.5-6.7-10.3C5.3 6 8.3 3 12 3Z"/><path d="M8.5 11.2h2.2V9h2.6v2.2h2.2v2.6h-2.2V16h-2.6v-2.2H8.5z"/></svg>
+        </div>
+        <div class="brand-copy"><strong>泰瑞医疗</strong><span>产品原型中心</span></div>
+      </div>
+      <span class="version"><i></i>需求讨论版 · 2026.08</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.1 3.2L8 7.5l2.9 1.3L12 12l1.1-3.2L16 7.5l-2.9-1.3Z"/><path d="m5 13-.8 2.2L2 16l2.2.8L5 19l.8-2.2L8 16l-2.2-.8Z"/></svg>
+          TAIRUI MEDICAL PROTOTYPES
+        </span>
+        <h1>选择需要查看的<br><span>产品原型</span></h1>
+        <p>面向用户健康管理与总部数字化运营，连接智能氧舱、个人手环、多模态检测设备及客户原有商城与门店系统。</p>
+        <div class="scope-list"><span>智能设备</span><span>健康数据</span><span>氧疗服务</span><span>多模态检测</span><span>原系统数据接入</span></div>
+      </section>
+
+      <section class="portal-grid" aria-label="产品原型目录">
+        <a class="portal-card mini" href="./tairui-c-miniapp-prototype.html" aria-label="打开C端小程序原型">
+          <div class="card-top">
+            <span class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="4"/><path d="M9 6h6M9 18h6"/></svg>
+            </span>
+            <span class="card-no">01 · USER APP</span>
+          </div>
+          <h2>C端小程序原型</h2>
+          <p>面向普通用户，展示设备控制、手环健康数据、氧疗记录、多模态报告及原商城业务入口。</p>
+          <div class="preview" aria-hidden="true">
+            <i class="preview-orbit"></i>
+            <div class="phone-art"><div class="phone-screen"><div class="phone-hero"></div><div class="phone-grid"><i></i><i></i><i></i></div><div class="phone-line"></div></div></div>
+          </div>
+          <div class="card-foot">
+            <div class="features"><span>8个页面</span><span>设备控制</span><span>健康报告</span></div>
+            <span class="open-btn">进入原型
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="portal-card web" href="./tairui-cloud-web-prototype.html" aria-label="打开云平台Web端原型">
+          <div class="card-top">
+            <span class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 22h8M12 18v4M3 8h18"/></svg>
+            </span>
+            <span class="card-no">02 · CLOUD WEB</span>
+          </div>
+          <h2>云平台Web端原型</h2>
+          <p>面向总部运营人员，汇总设备、用户、氧疗、门店、多模态检测与数据接入情况。</p>
+          <div class="preview" aria-hidden="true">
+            <div class="desktop-art"><div class="desk-side"><i></i></div><div class="desk-content"><div class="desk-stats"><i></i><i></i><i></i><i></i></div><div class="desk-chart"></div></div></div>
+          </div>
+          <div class="card-foot">
+            <div class="features"><span>数据驾驶舱</span><span>设备管理</span><span>数据接入</span></div>
+            <span class="open-btn">进入原型
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </a>
+      </section>
+    </main>
+
+    <footer><span>泰瑞医疗云平台系统</span><i></i><span>需求沟通与产品设计原型</span></footer>
+  </div>
+</body>
+</html>

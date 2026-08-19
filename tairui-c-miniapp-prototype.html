@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>泰瑞医疗 C端小程序原型</title>
+  <style>
+    :root {
+      --brand: #276ef1;
+      --brand-deep: #1554c4;
+      --brand-soft: #eaf1ff;
+      --aqua: #1fb7a6;
+      --aqua-soft: #e7f8f5;
+      --orange: #ff9b51;
+      --orange-soft: #fff2e8;
+      --purple: #7c6cf2;
+      --purple-soft: #f0edff;
+      --ink: #17243f;
+      --text: #46536c;
+      --muted: #8a96ab;
+      --line: #e8edf5;
+      --surface: #ffffff;
+      --canvas: #f3f6fb;
+      --success: #19a974;
+      --danger: #ed5b65;
+      --shadow: 0 14px 40px rgba(35, 64, 120, .12);
+      --phone-w: 390px;
+      --phone-h: 844px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; min-height: 100%; }
+
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 13% 13%, rgba(39, 110, 241, .13), transparent 28%),
+        radial-gradient(circle at 86% 84%, rgba(31, 183, 166, .12), transparent 26%),
+        #eef3fa;
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+
+    .prototype-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 244px minmax(450px, 1fr);
+      gap: 26px;
+      align-items: center;
+      max-width: 940px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .demo-panel {
+      align-self: stretch;
+      max-height: calc(100vh - 64px);
+      overflow: auto;
+      padding: 10px 2px;
+      scrollbar-width: none;
+    }
+
+    .demo-panel::-webkit-scrollbar { display: none; }
+
+    .demo-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: #fff;
+      background: linear-gradient(145deg, var(--brand), #34b7c9);
+      box-shadow: 0 10px 24px rgba(39, 110, 241, .24);
+    }
+
+    .brand-mark svg { width: 25px; height: 25px; }
+    .demo-brand strong { display: block; font-size: 17px; font-weight: 700; }
+    .demo-brand span { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; }
+
+    .panel-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      margin: 20px 12px 9px;
+      text-transform: uppercase;
+    }
+
+    .screen-menu { display: grid; gap: 6px; }
+
+    .screen-menu button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 13px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      transition: .2s ease;
+    }
+
+    .screen-menu button:hover { background: rgba(255,255,255,.7); }
+
+    .screen-menu button.active {
+      color: var(--brand);
+      background: #fff;
+      box-shadow: 0 7px 20px rgba(39, 75, 140, .08);
+      font-weight: 700;
+    }
+
+    .menu-icon {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: currentColor;
+      background: rgba(255,255,255,.66);
+    }
+
+    .screen-menu button.active .menu-icon { background: var(--brand-soft); }
+    .menu-icon svg { width: 17px; height: 17px; }
+
+    .stage { display: grid; place-items: center; min-width: 0; }
+
+    .phone {
+      position: relative;
+      width: var(--phone-w);
+      height: min(var(--phone-h), calc(100vh - 42px));
+      min-height: 680px;
+      overflow: hidden;
+      border: 8px solid #101827;
+      border-radius: 48px;
+      background: var(--canvas);
+      box-shadow: 0 30px 80px rgba(24, 46, 87, .26), inset 0 0 0 1px rgba(255,255,255,.15);
+    }
+
+    .phone::before {
+      content: "";
+      position: absolute;
+      z-index: 20;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92px;
+      height: 25px;
+      border-radius: 18px;
+      background: #101827;
+      pointer-events: none;
+    }
+
+    .phone-inner { height: 100%; display: flex; flex-direction: column; }
+
+    .statusbar {
+      position: relative;
+      z-index: 5;
+      height: 38px;
+      flex: 0 0 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 19px 0;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      background: rgba(255,255,255,.93);
+    }
+
+    .status-icons { display: flex; align-items: center; gap: 5px; }
+    .signal { display: flex; align-items: end; gap: 2px; height: 10px; }
+    .signal i { display: block; width: 2px; border-radius: 1px; background: currentColor; }
+    .signal i:nth-child(1) { height: 4px; }
+    .signal i:nth-child(2) { height: 6px; }
+    .signal i:nth-child(3) { height: 8px; }
+    .signal i:nth-child(4) { height: 10px; }
+    .battery { width: 20px; height: 10px; border: 1.5px solid currentColor; border-radius: 3px; padding: 1px; position: relative; }
+    .battery::before { content: ""; display: block; width: 85%; height: 100%; border-radius: 1px; background: currentColor; }
+    .battery::after { content: ""; position: absolute; right: -3px; top: 2px; width: 2px; height: 4px; border-radius: 0 2px 2px 0; background: currentColor; }
+
+    .appbar {
+      height: 58px;
+      flex: 0 0 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 16px 10px;
+      background: rgba(255,255,255,.94);
+      border-bottom: 1px solid rgba(228, 234, 244, .75);
+    }
+
+    .appbar-title { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .appbar-logo { width: 31px; height: 31px; border-radius: 10px; display: grid; place-items: center; color: #fff; background: linear-gradient(145deg, var(--brand), #25b1c1); }
+    .appbar-logo svg { width: 18px; height: 18px; }
+    .appbar-copy strong { display: block; font-size: 16px; font-weight: 750; }
+    .appbar-copy span { display: block; font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    .back-btn, .circle-btn {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: #f5f7fb;
+      cursor: pointer;
+    }
+
+    .back-btn:hover, .circle-btn:hover { background: var(--brand-soft); color: var(--brand); }
+
+    .appbar-heading {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 750;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mini-capsule {
+      height: 30px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      color: #28344b;
+      background: rgba(255,255,255,.85);
+    }
+
+    .mini-capsule i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; box-shadow: 7px 0 0 currentColor, -7px 0 0 currentColor; }
+    .mini-capsule b { width: 1px; height: 15px; background: var(--line); }
+    .mini-capsule span { width: 10px; height: 10px; border: 2px solid currentColor; border-radius: 50%; }
+
+    .screen {
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 14px 14px 24px;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .screen::-webkit-scrollbar { display: none; }
+
+    .tabbar {
+      position: relative;
+      z-index: 8;
+      height: 68px;
+      flex: 0 0 68px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      padding: 5px 8px 7px;
+      background: rgba(255,255,255,.97);
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -7px 20px rgba(41, 61, 99, .04);
+    }
+
+    .tabbar button {
+      border: 0;
+      background: transparent;
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      color: #9aa4b5;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .tabbar button svg { width: 22px; height: 22px; }
+    .tabbar button.active { color: var(--brand); font-weight: 700; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 20px 2px 10px;
+    }
+
+    .section-head.first { margin-top: 2px; }
+    .section-head h2 { margin: 0; font-size: 16px; font-weight: 750; }
+    .section-head span { color: var(--muted); font-size: 11px; }
+    .text-link { border: 0; padding: 4px 0; color: var(--brand); background: transparent; font-size: 12px; cursor: pointer; }
+
+    .card {
+      border: 1px solid rgba(230,235,244,.9);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 6px 20px rgba(50, 76, 124, .055);
+    }
+
+    .greeting { display: flex; align-items: center; justify-content: space-between; margin: 1px 2px 14px; }
+    .greeting h1 { margin: 0; font-size: 21px; letter-spacing: -.02em; }
+    .greeting p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .avatar { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 14px; color: #fff; font-weight: 700; background: linear-gradient(145deg,#94aaf6,#6f67da); box-shadow: 0 8px 16px rgba(105, 102, 217, .2); }
+
+    .hero-health {
+      position: relative;
+      overflow: hidden;
+      min-height: 172px;
+      padding: 18px;
+      color: #fff;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #1e66e9 0%, #2c81ed 48%, #27aea9 120%);
+      box-shadow: 0 15px 30px rgba(34, 105, 215, .22);
+    }
+
+    .hero-health::before, .hero-health::after { content: ""; position: absolute; border-radius: 50%; background: rgba(255,255,255,.09); }
+    .hero-health::before { width: 155px; height: 155px; right: -55px; top: -72px; }
+    .hero-health::after { width: 96px; height: 96px; right: 67px; bottom: -62px; }
+    .hero-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; }
+    .hero-kicker { display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,.83); }
+    .hero-kicker i { width: 7px; height: 7px; border-radius: 50%; background: #84f1d1; box-shadow: 0 0 0 4px rgba(132,241,209,.15); }
+    .hero-date { font-size: 11px; color: rgba(255,255,255,.72); }
+    .hero-body { position: relative; z-index: 1; display: flex; align-items: center; gap: 18px; margin-top: 16px; }
+    .score-ring { position: relative; width: 91px; height: 91px; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(#8cf0d6 0 86%, rgba(255,255,255,.18) 86%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1); }
+    .score-ring::before { content: ""; position: absolute; width: 72px; height: 72px; border-radius: 50%; background: #2b78e7; }
+    .score-value { position: relative; z-index: 1; text-align: center; }
+    .score-value strong { display: block; font-size: 27px; line-height: 1; }
+    .score-value span { font-size: 9px; color: rgba(255,255,255,.78); }
+    .hero-summary { flex: 1; }
+    .hero-summary strong { display: block; font-size: 16px; }
+    .hero-summary p { margin: 6px 0 12px; font-size: 11px; line-height: 1.55; color: rgba(255,255,255,.78); }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .hero-tag { padding: 5px 8px; border-radius: 10px; background: rgba(255,255,255,.14); font-size: 9px; }
+
+    .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .quick-item { border: 0; padding: 11px 3px 8px; border-radius: 15px; background: #fff; cursor: pointer; }
+    .quick-icon { width: 38px; height: 38px; display: grid; place-items: center; margin: 0 auto 7px; border-radius: 13px; }
+    .quick-icon svg { width: 20px; height: 20px; }
+    .quick-item span { display: block; font-size: 10px; color: var(--text); }
+    .quick-item:nth-child(1) .quick-icon { color: var(--brand); background: var(--brand-soft); }
+    .quick-item:nth-child(2) .quick-icon { color: var(--aqua); background: var(--aqua-soft); }
+    .quick-item:nth-child(3) .quick-icon { color: var(--purple); background: var(--purple-soft); }
+    .quick-item:nth-child(4) .quick-icon { color: var(--orange); background: var(--orange-soft); }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .metric-card { padding: 12px 11px; }
+    .metric-card .metric-label { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; }
+    .metric-card .metric-label svg { width: 13px; height: 13px; }
+    .metric-card strong { display: inline-block; margin-top: 8px; font-size: 18px; }
+    .metric-card em { color: var(--muted); font-size: 9px; font-style: normal; margin-left: 2px; }
+    .metric-card small { display: block; color: var(--success); font-size: 9px; margin-top: 4px; }
+
+    .session-card { padding: 14px; cursor: pointer; }
+    .session-main { display: flex; align-items: center; gap: 12px; }
+    .session-icon { width: 46px; height: 46px; flex: 0 0 46px; display: grid; place-items: center; color: var(--brand); border-radius: 15px; background: var(--brand-soft); }
+    .session-icon svg { width: 24px; height: 24px; }
+    .session-copy { min-width: 0; flex: 1; }
+    .session-copy strong { display: block; font-size: 13px; }
+    .session-copy span { display: block; color: var(--muted); font-size: 10px; margin-top: 4px; }
+    .session-result { display: flex; align-items: center; gap: 8px; margin-top: 13px; padding-top: 11px; border-top: 1px solid var(--line); }
+    .result-point { flex: 1; }
+    .result-point span { color: var(--muted); font-size: 9px; }
+    .result-point strong { display: block; margin-top: 2px; font-size: 13px; }
+    .result-arrow { color: var(--success); font-weight: 800; }
+    .positive { color: var(--success); }
+
+    .external-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .external-card { position: relative; overflow: hidden; padding: 14px; min-height: 110px; border: 0; text-align: left; cursor: pointer; }
+    .external-card::after { content: ""; position: absolute; width: 82px; height: 82px; border-radius: 50%; right: -38px; bottom: -38px; background: currentColor; opacity: .07; }
+    .external-card.shop { color: var(--orange); background: linear-gradient(145deg,#fff,#fff7ef); }
+    .external-card.store { color: var(--aqua); background: linear-gradient(145deg,#fff,#f0fbf8); }
+    .external-card svg { width: 23px; height: 23px; }
+    .external-card strong { display: block; color: var(--ink); font-size: 13px; margin-top: 9px; }
+    .external-card span { display: block; color: var(--muted); font-size: 9px; margin-top: 4px; }
+    .external-badge { position: absolute; right: 9px; top: 9px; padding: 3px 6px; border-radius: 7px; background: rgba(255,255,255,.78); color: var(--muted); font-size: 8px; }
+
+    .device-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 13px; }
+    .summary-cell { padding: 13px; }
+    .summary-cell span { color: var(--muted); font-size: 10px; }
+    .summary-cell strong { display: block; margin-top: 5px; font-size: 17px; }
+    .summary-cell small { display: block; color: var(--success); font-size: 9px; margin-top: 3px; }
+
+    .device-card { overflow: hidden; margin-bottom: 12px; }
+    .device-card-main { display: flex; gap: 13px; padding: 15px; cursor: pointer; }
+    .device-visual { position: relative; width: 105px; height: 116px; flex: 0 0 105px; display: grid; place-items: center; overflow: hidden; border-radius: 17px; background: linear-gradient(145deg,#edf4ff,#dae9ff); }
+    .device-visual.bracelet { background: linear-gradient(145deg,#f1efff,#e4e0ff); }
+    .cabin-art { position: relative; width: 56px; height: 85px; border-radius: 28px 28px 13px 13px; background: linear-gradient(90deg,#fefefe,#cbd9ef); box-shadow: 8px 9px 17px rgba(64,91,137,.2); }
+    .cabin-art::before { content: ""; position: absolute; width: 36px; height: 38px; left: 10px; top: 10px; border-radius: 20px 20px 10px 10px; background: linear-gradient(145deg,#76b3ec,#346eb5); box-shadow: inset 4px 4px 8px rgba(255,255,255,.35); }
+    .cabin-art::after { content: "T"; position: absolute; bottom: 11px; left: 0; right: 0; text-align: center; color: #52709a; font-size: 12px; font-weight: 800; }
+    .watch-art { width: 40px; height: 62px; position: relative; border: 7px solid #45465c; border-radius: 16px; background: linear-gradient(145deg,#22263b,#5260a2); box-shadow: 0 -25px 0 -16px #8f92af, 0 25px 0 -16px #8f92af, 8px 11px 18px rgba(73,72,131,.25); }
+    .watch-art::before { content: "♥"; position: absolute; inset: 0; display: grid; place-items: center; color: #ff8093; font-size: 13px; }
+    .online-dot { position: absolute; top: 9px; left: 9px; display: flex; align-items: center; gap: 4px; padding: 4px 6px; border-radius: 8px; color: var(--success); background: rgba(255,255,255,.8); font-size: 8px; font-weight: 700; }
+    .online-dot i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .device-info { flex: 1; min-width: 0; }
+    .device-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 7px; }
+    .device-title strong { font-size: 14px; }
+    .device-title span { color: var(--muted); font-size: 9px; margin-top: 2px; }
+    .device-meta { display: grid; gap: 7px; margin-top: 15px; }
+    .device-meta div { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 10px; }
+    .device-meta b { color: var(--text); font-weight: 650; }
+    .device-card-actions { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+    .device-card-actions button { padding: 11px; border: 0; background: #fff; color: var(--brand); font-size: 11px; cursor: pointer; }
+    .device-card-actions button + button { border-left: 1px solid var(--line); }
+
+    .empty-add { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 13px; border: 1px dashed #cfd8e8; border-radius: 15px; color: var(--brand); background: rgba(255,255,255,.5); cursor: pointer; font-size: 11px; }
+
+    .control-hero { position: relative; overflow: hidden; padding: 17px; color: #fff; border-radius: 24px; background: linear-gradient(155deg,#195bcc,#2d86ec 54%,#24aaa4); box-shadow: 0 16px 34px rgba(30,101,211,.25); }
+    .control-hero::after { content: ""; position: absolute; width: 190px; height: 190px; border-radius: 50%; right: -100px; top: -83px; border: 28px solid rgba(255,255,255,.06); }
+    .control-device-line { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; }
+    .control-device-line strong { font-size: 14px; }
+    .control-device-line span { display: flex; align-items: center; gap: 5px; color: rgba(255,255,255,.78); font-size: 10px; }
+    .control-device-line i { width: 6px; height: 6px; border-radius: 50%; background: #83f0d0; }
+    .control-ring { --progress: 0deg; position: relative; z-index: 1; width: 174px; height: 174px; display: grid; place-items: center; margin: 18px auto 15px; border-radius: 50%; background: conic-gradient(#83f0d0 var(--progress), rgba(255,255,255,.17) 0); box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
+    .control-ring::before { content: ""; position: absolute; width: 151px; height: 151px; border-radius: 50%; background: rgba(31,107,211,.94); box-shadow: inset 0 0 28px rgba(255,255,255,.05); }
+    .control-time { position: relative; z-index: 1; text-align: center; }
+    .control-time span { display: block; color: rgba(255,255,255,.72); font-size: 10px; }
+    .control-time strong { display: block; margin: 7px 0 3px; font-size: 38px; letter-spacing: -.04em; }
+    .control-time small { color: rgba(255,255,255,.72); font-size: 10px; }
+    .control-stats { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3,1fr); padding-top: 14px; border-top: 1px solid rgba(255,255,255,.15); }
+    .control-stats div { text-align: center; }
+    .control-stats span { display: block; color: rgba(255,255,255,.66); font-size: 9px; }
+    .control-stats strong { display: block; margin-top: 4px; font-size: 13px; }
+
+    .setting-card { padding: 15px; margin-top: 13px; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .setting-row + .setting-row { margin-top: 15px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .setting-label strong { display: block; font-size: 12px; }
+    .setting-label span { display: block; color: var(--muted); font-size: 9px; margin-top: 3px; }
+    .segmented { display: inline-flex; padding: 3px; border-radius: 11px; background: #f2f5fa; }
+    .segmented button { min-width: 48px; border: 0; border-radius: 8px; padding: 6px 8px; color: var(--muted); background: transparent; font-size: 9px; cursor: pointer; }
+    .segmented button.active { color: var(--brand); background: #fff; box-shadow: 0 3px 9px rgba(48,70,110,.09); font-weight: 700; }
+    .duration-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 11px; }
+    .duration-grid button { padding: 9px 4px; border: 1px solid var(--line); border-radius: 11px; background: #fff; color: var(--text); font-size: 10px; cursor: pointer; }
+    .duration-grid button.active { border-color: #a8c2fb; color: var(--brand); background: var(--brand-soft); font-weight: 700; }
+    .primary-action { width: 100%; display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 13px; padding: 13px; border: 0; border-radius: 15px; color: #fff; background: linear-gradient(135deg,var(--brand),#3187ee); box-shadow: 0 10px 20px rgba(39,110,241,.2); cursor: pointer; font-size: 13px; font-weight: 700; }
+    .primary-action.running { background: linear-gradient(135deg,#e55d68,#f0836d); box-shadow: 0 10px 20px rgba(229,93,104,.18); }
+    .primary-action svg { width: 18px; height: 18px; }
+
+    .health-score-card { display: flex; align-items: center; gap: 16px; padding: 16px; }
+    .mini-score { --score: 86%; position: relative; width: 88px; height: 88px; flex: 0 0 88px; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(var(--aqua) var(--score), #e9eef4 0); }
+    .mini-score::before { content: ""; position: absolute; width: 70px; height: 70px; border-radius: 50%; background: #fff; }
+    .mini-score div { position: relative; z-index: 1; text-align: center; }
+    .mini-score strong { display: block; font-size: 24px; }
+    .mini-score span { color: var(--muted); font-size: 8px; }
+    .health-score-copy strong { font-size: 14px; }
+    .health-score-copy p { margin: 6px 0 9px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .status-tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 9px; color: var(--success); background: var(--aqua-soft); font-size: 9px; }
+    .status-tag i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    .period-tabs { display: grid; grid-template-columns: repeat(3,1fr); padding: 3px; margin: 13px 0; border-radius: 13px; background: #e9eef5; }
+    .period-tabs button { padding: 8px; border: 0; border-radius: 10px; color: var(--muted); background: transparent; font-size: 10px; cursor: pointer; }
+    .period-tabs button.active { color: var(--brand); background: #fff; font-weight: 700; box-shadow: 0 3px 9px rgba(42,65,106,.07); }
+    .chart-card { padding: 14px; }
+    .chart-title { display: flex; align-items: start; justify-content: space-between; }
+    .chart-title span { color: var(--muted); font-size: 10px; }
+    .chart-title strong { display: block; margin-top: 4px; font-size: 22px; }
+    .chart-title strong small { color: var(--muted); font-size: 10px; font-weight: 500; }
+    .trend-up { color: var(--success); font-size: 9px; }
+    .line-chart { width: 100%; height: 116px; margin-top: 10px; overflow: visible; }
+    .line-chart text { fill: #98a3b5; font-size: 8px; }
+    .line-chart .grid { stroke: #edf1f6; stroke-width: 1; }
+    .line-chart .area { fill: url(#healthArea); }
+    .line-chart .path { fill: none; stroke: var(--brand); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .line-chart .dot { fill: #fff; stroke: var(--brand); stroke-width: 2; }
+
+    .health-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .health-metric { padding: 13px; }
+    .health-metric-head { display: flex; align-items: center; justify-content: space-between; }
+    .health-metric-head span { color: var(--muted); font-size: 10px; }
+    .health-metric-head svg { width: 16px; height: 16px; }
+    .health-metric strong { display: inline-block; margin-top: 8px; font-size: 19px; }
+    .health-metric em { color: var(--muted); font-style: normal; font-size: 9px; }
+    .microbar { display: flex; align-items: end; gap: 3px; height: 26px; margin-top: 8px; }
+    .microbar i { flex: 1; border-radius: 3px 3px 1px 1px; background: #dce7fd; }
+    .health-metric.aqua .microbar i { background: #d6f3ef; }
+    .health-metric.purple .microbar i { background: #e5e1fb; }
+    .health-metric.orange .microbar i { background: #ffe5d3; }
+
+    .compare-card { padding: 14px; }
+    .compare-head { display: flex; align-items: center; justify-content: space-between; }
+    .compare-head strong { font-size: 12px; }
+    .compare-head span { color: var(--muted); font-size: 9px; }
+    .compare-track { position: relative; height: 7px; margin: 18px 4px 10px; border-radius: 10px; background: #e8edf5; }
+    .compare-track::before { content: ""; position: absolute; left: 18%; right: 7%; top: 0; bottom: 0; border-radius: inherit; background: linear-gradient(90deg,var(--brand),var(--aqua)); }
+    .compare-track i { position: absolute; top: 50%; width: 15px; height: 15px; border: 3px solid #fff; border-radius: 50%; transform: translate(-50%,-50%); box-shadow: 0 2px 8px rgba(45,66,102,.2); }
+    .compare-track i:first-child { left: 18%; background: var(--brand); }
+    .compare-track i:last-child { left: 93%; background: var(--aqua); }
+    .compare-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
+    .compare-labels strong { display: block; color: var(--ink); font-size: 13px; margin-bottom: 2px; }
+
+    .filter-row { display: flex; gap: 7px; overflow-x: auto; padding: 1px 1px 11px; scrollbar-width: none; }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-row button { flex: 0 0 auto; padding: 7px 12px; border: 1px solid var(--line); border-radius: 20px; color: var(--muted); background: #fff; font-size: 10px; cursor: pointer; }
+    .filter-row button.active { color: #fff; border-color: var(--brand); background: var(--brand); }
+    .record-list { display: grid; gap: 10px; }
+    .record-card { padding: 14px; cursor: pointer; }
+    .record-top { display: flex; align-items: center; gap: 11px; }
+    .record-date { width: 45px; height: 47px; flex: 0 0 45px; display: grid; place-items: center; border-radius: 13px; color: var(--brand); background: var(--brand-soft); text-align: center; }
+    .record-date strong { display: block; font-size: 16px; line-height: 1; }
+    .record-date span { display: block; margin-top: 3px; font-size: 8px; }
+    .record-copy { flex: 1; min-width: 0; }
+    .record-copy strong { display: block; font-size: 12px; }
+    .record-copy span { display: block; color: var(--muted); font-size: 9px; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .record-type { padding: 4px 7px; border-radius: 8px; color: var(--aqua); background: var(--aqua-soft); font-size: 8px; }
+    .record-type.home { color: var(--purple); background: var(--purple-soft); }
+    .record-bottom { display: grid; grid-template-columns: repeat(3,1fr); margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line); }
+    .record-bottom div { text-align: center; }
+    .record-bottom span { display: block; color: var(--muted); font-size: 8px; }
+    .record-bottom strong { display: block; margin-top: 3px; font-size: 11px; }
+
+    .report-hero { position: relative; overflow: hidden; padding: 17px; color: #fff; border-radius: 22px; background: linear-gradient(140deg,#6656db,#8276ef 53%,#3da8cf); box-shadow: 0 14px 30px rgba(104,91,216,.23); }
+    .report-hero::after { content: ""; position: absolute; width: 145px; height: 145px; right: -55px; bottom: -82px; border-radius: 50%; border: 24px solid rgba(255,255,255,.07); }
+    .report-meta { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; color: rgba(255,255,255,.72); font-size: 9px; }
+    .report-badge { padding: 5px 7px; border-radius: 9px; color: #dffaf3; background: rgba(255,255,255,.13); }
+    .report-main { position: relative; z-index: 1; display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+    .report-gauge { position: relative; width: 102px; height: 102px; flex: 0 0 102px; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(#89efd1 0 82%,rgba(255,255,255,.16) 82%); }
+    .report-gauge::before { content: ""; position: absolute; width: 81px; height: 81px; border-radius: 50%; background: #7167df; }
+    .report-gauge div { position: relative; z-index: 1; text-align: center; }
+    .report-gauge strong { display: block; font-size: 29px; line-height: 1; }
+    .report-gauge span { color: rgba(255,255,255,.72); font-size: 8px; }
+    .report-copy strong { display: block; font-size: 16px; }
+    .report-copy p { margin: 7px 0 0; color: rgba(255,255,255,.76); font-size: 10px; line-height: 1.55; }
+
+    .report-tabs { display: flex; gap: 7px; overflow-x: auto; padding: 13px 1px 10px; scrollbar-width: none; }
+    .report-tabs::-webkit-scrollbar { display:none; }
+    .report-tabs button { flex: 0 0 auto; padding: 7px 11px; border: 1px solid var(--line); border-radius: 18px; background: #fff; color: var(--muted); font-size: 9px; cursor: pointer; }
+    .report-tabs button.active { color: var(--purple); border-color: #c7bff7; background: var(--purple-soft); font-weight: 700; }
+    .report-section { padding: 15px; }
+    .report-section-head { display: flex; align-items: center; justify-content: space-between; }
+    .report-section-head strong { font-size: 13px; }
+    .level-good { color: var(--success); font-size: 9px; }
+    .indicator-list { display: grid; gap: 13px; margin-top: 15px; }
+    .indicator-row { display: grid; grid-template-columns: 74px 1fr 43px; align-items: center; gap: 8px; }
+    .indicator-row span { font-size: 10px; color: var(--text); }
+    .indicator-bar { height: 7px; border-radius: 7px; background: #ebeff5; overflow: hidden; }
+    .indicator-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--purple),#46b4c8); }
+    .indicator-row strong { text-align: right; font-size: 10px; }
+    .report-advice { display: flex; gap: 10px; margin-top: 11px; padding: 13px; color: #4d4775; border-radius: 15px; background: var(--purple-soft); font-size: 10px; line-height: 1.55; }
+    .report-advice svg { flex: 0 0 17px; width: 17px; height: 17px; color: var(--purple); }
+
+    .profile-card { position: relative; overflow: hidden; padding: 17px; color: #fff; border-radius: 22px; background: linear-gradient(135deg,#1e60d2,#347ee5 55%,#44a6c3); box-shadow: 0 14px 30px rgba(39,103,201,.22); }
+    .profile-card::after { content: ""; position: absolute; width: 120px; height: 120px; right: -60px; top: -60px; border-radius: 50%; background: rgba(255,255,255,.09); }
+    .profile-top { position: relative; z-index: 1; display: flex; align-items: center; gap: 12px; }
+    .profile-avatar { width: 54px; height: 54px; display: grid; place-items: center; border: 3px solid rgba(255,255,255,.5); border-radius: 18px; background: linear-gradient(145deg,#a4b3fc,#756add); font-size: 18px; font-weight: 750; }
+    .profile-copy { flex: 1; }
+    .profile-copy strong { display: block; font-size: 17px; }
+    .profile-copy span { display: block; color: rgba(255,255,255,.73); font-size: 9px; margin-top: 4px; }
+    .member-chip { padding: 5px 8px; border-radius: 10px; color: #654d20; background: linear-gradient(135deg,#ffe8ac,#ffd279); font-size: 8px; font-weight: 750; }
+    .profile-stats { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3,1fr); margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.17); }
+    .profile-stats div { text-align: center; }
+    .profile-stats strong { display: block; font-size: 15px; }
+    .profile-stats span { color: rgba(255,255,255,.66); font-size: 8px; }
+
+    .order-shortcuts { display: grid; grid-template-columns: repeat(4,1fr); padding: 14px 8px; }
+    .order-shortcuts button { position: relative; border: 0; background: transparent; cursor: pointer; color: var(--text); font-size: 9px; }
+    .order-shortcuts svg { display: block; width: 22px; height: 22px; margin: 0 auto 7px; color: var(--brand); }
+    .count-dot { position: absolute; top: -5px; left: calc(50% + 6px); min-width: 15px; height: 15px; padding: 0 4px; display: grid; place-items: center; border: 2px solid #fff; border-radius: 8px; color: #fff; background: var(--danger); font-size: 7px; }
+
+    .menu-list { overflow: hidden; }
+    .menu-row { width: 100%; display: flex; align-items: center; gap: 11px; padding: 13px 14px; border: 0; background: #fff; cursor: pointer; text-align: left; }
+    .menu-row + .menu-row { border-top: 1px solid var(--line); }
+    .menu-row-icon { width: 31px; height: 31px; flex: 0 0 31px; display: grid; place-items: center; border-radius: 10px; }
+    .menu-row-icon svg { width: 17px; height: 17px; }
+    .menu-row span { flex: 1; font-size: 11px; }
+    .menu-row small { color: var(--muted); font-size: 9px; }
+
+    .sync-banner { display: flex; align-items: center; gap: 9px; padding: 11px 12px; margin-bottom: 11px; border-radius: 13px; color: #5f6b7f; background: #eaf0f9; font-size: 9px; line-height: 1.45; }
+    .sync-banner svg { width: 16px; height: 16px; flex: 0 0 16px; color: var(--brand); }
+    .order-card { padding: 14px; margin-bottom: 10px; }
+    .order-store { display: flex; align-items: center; justify-content: space-between; }
+    .order-store strong { font-size: 11px; }
+    .order-store span { color: var(--orange); font-size: 9px; }
+    .order-product { display: flex; gap: 11px; margin-top: 12px; padding: 11px; border-radius: 13px; background: #f7f9fc; }
+    .order-product-art { width: 58px; height: 58px; flex: 0 0 58px; display: grid; place-items: center; border-radius: 12px; color: var(--brand); background: var(--brand-soft); }
+    .order-product-art svg { width: 27px; height: 27px; }
+    .order-product-copy { flex: 1; min-width: 0; }
+    .order-product-copy strong { display: block; font-size: 11px; }
+    .order-product-copy span { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; }
+    .order-product-copy b { display: block; margin-top: 8px; font-size: 12px; }
+    .order-actions { display: flex; justify-content: flex-end; gap: 7px; margin-top: 11px; }
+    .outline-btn { padding: 7px 11px; border: 1px solid var(--line); border-radius: 16px; background: #fff; color: var(--text); font-size: 9px; cursor: pointer; }
+    .outline-btn.primary { color: var(--brand); border-color: #b7cdfb; }
+
+    .modal-layer {
+      position: absolute;
+      z-index: 50;
+      inset: 0;
+      display: grid;
+      align-items: end;
+      padding: 14px;
+      background: rgba(17,29,51,.42);
+      opacity: 0;
+      visibility: hidden;
+      transition: .2s ease;
+    }
+
+    .modal-layer.show { opacity: 1; visibility: visible; }
+    .modal-sheet { transform: translateY(18px); padding: 18px; border-radius: 23px; background: #fff; box-shadow: 0 20px 50px rgba(18,30,52,.23); transition: .25s ease; }
+    .modal-layer.show .modal-sheet { transform: translateY(0); }
+    .modal-icon { width: 48px; height: 48px; display: grid; place-items: center; margin: 0 auto 12px; border-radius: 16px; color: var(--brand); background: var(--brand-soft); }
+    .modal-icon svg { width: 24px; height: 24px; }
+    .modal-sheet h3 { margin: 0; text-align: center; font-size: 16px; }
+    .modal-sheet p { margin: 8px 4px 17px; color: var(--muted); font-size: 10px; line-height: 1.6; text-align: center; }
+    .modal-actions { display: grid; grid-template-columns: 1fr 1.5fr; gap: 9px; }
+    .modal-actions button { padding: 11px; border-radius: 13px; cursor: pointer; font-size: 11px; }
+    .modal-cancel { border: 1px solid var(--line); background: #fff; }
+    .modal-confirm { border: 0; color: #fff; background: var(--brand); font-weight: 700; }
+
+    .toast {
+      position: absolute;
+      z-index: 70;
+      left: 50%;
+      bottom: 86px;
+      max-width: 80%;
+      transform: translate(-50%, 16px);
+      padding: 9px 13px;
+      border-radius: 11px;
+      color: #fff;
+      background: rgba(22,33,51,.9);
+      box-shadow: 0 10px 24px rgba(16,25,42,.2);
+      font-size: 10px;
+      opacity: 0;
+      visibility: hidden;
+      transition: .25s ease;
+      text-align: center;
+    }
+
+    .toast.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+
+    .spin { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 980px) {
+      .prototype-shell { grid-template-columns: 205px minmax(420px,1fr); }
+    }
+
+    @media (max-width: 720px) {
+      body { background: var(--canvas); }
+      .prototype-shell { display: block; min-height: 100vh; padding: 0; }
+      .demo-panel { display: none; }
+      .stage { display: block; }
+      .phone { width: 100vw; height: 100dvh; min-height: 620px; border: 0; border-radius: 0; box-shadow: none; }
+      .phone::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-shell">
+    <aside class="demo-panel" aria-label="原型页面导航">
+      <div class="demo-brand">
+        <div class="brand-mark" id="sideBrandIcon"></div>
+        <div><strong>泰瑞医疗</strong><span>C端小程序交互原型</span></div>
+      </div>
+      <div class="panel-label">主要页面</div>
+      <nav class="screen-menu" id="screenMenu"></nav>
+    </aside>
+
+    <main class="stage">
+      <div class="phone" aria-label="泰瑞医疗小程序原型">
+        <div class="phone-inner">
+          <div class="statusbar">
+            <span id="clock">09:41</span>
+            <div class="status-icons" aria-hidden="true">
+              <span class="signal"><i></i><i></i><i></i><i></i></span>
+              <span>5G</span><span class="battery"></span>
+            </div>
+          </div>
+          <header class="appbar" id="appbar"></header>
+          <section class="screen" id="screen" aria-live="polite"></section>
+          <nav class="tabbar" id="tabbar" aria-label="小程序主导航"></nav>
+        </div>
+        <div class="modal-layer" id="modalLayer" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <div class="modal-sheet">
+            <div class="modal-icon" id="modalIcon"></div>
+            <h3 id="modalTitle"></h3>
+            <p id="modalText"></p>
+            <div class="modal-actions">
+              <button class="modal-cancel" data-action="modal-cancel">取消</button>
+              <button class="modal-confirm" id="modalConfirm" data-action="modal-confirm">确认</button>
+            </div>
+          </div>
+        </div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    const iconPaths = {
+      logo: '<path d="M12 3c3.7 0 6.7 3 6.7 6.7 0 4.8-4.4 8.2-6.7 10.3-2.3-2.1-6.7-5.5-6.7-10.3C5.3 6 8.3 3 12 3Z"/><path d="M8.5 11.2h2.2V9h2.6v2.2h2.2v2.6h-2.2V16h-2.6v-2.2H8.5z"/>',
+      home: '<path d="m3 10 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/>',
+      health: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/><path d="M7 12h2l1.2-3 2.3 6 1.4-3H17"/>',
+      device: '<rect x="6" y="2" width="12" height="20" rx="4"/><path d="M9 6h6M9 18h6"/>',
+      user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+      bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
+      chevron: '<path d="m9 18 6-6-6-6"/>',
+      back: '<path d="m15 18-6-6 6-6"/>',
+      oxygen: '<path d="M12 22c4.4 0 8-3.6 8-8 0-5.8-8-12-8-12S4 8.2 4 14c0 4.4 3.6 8 8 8Z"/><path d="M8.5 14.5c.8 2.1 2.2 3.2 4.5 3.4"/>',
+      report: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+      calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+      shop: '<path d="M3 9 5 3h14l2 6"/><path d="M5 13v8h14v-8M9 21v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>',
+      location: '<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+      link: '<path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/>',
+      watch: '<rect x="7" y="5" width="10" height="14" rx="3"/><path d="m9 5 .7-3h4.6l.7 3M9 19l.7 3h4.6l.7-3"/><path d="M10 12h4"/>',
+      play: '<path d="m8 5 11 7-11 7Z"/>',
+      pause: '<path d="M8 5h3v14H8zM14 5h3v14h-3z"/>',
+      sync: '<path d="M20 11a8.1 8.1 0 0 0-15.5-3M4 4v4h4M4 13a8.1 8.1 0 0 0 15.5 3M20 20v-4h-4"/>',
+      heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
+      moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>',
+      activity: '<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+      trend: '<path d="m3 17 6-6 4 4 8-9"/><path d="M15 6h6v6"/>',
+      sparkles: '<path d="m12 3-1.1 3.2L8 7.5l2.9 1.3L12 12l1.1-3.2L16 7.5l-2.9-1.3Z"/><path d="m5 13-.8 2.2L2 16l2.2.8L5 19l.8-2.2L8 16l-2.2-.8Z"/><path d="m19 13-.7 1.8-1.8.7 1.8.7L19 18l.7-1.8 1.8-.7-1.8-.7Z"/>',
+      order: '<path d="M6 2h12l2 4H4l2-4Z"/><path d="M5 6v15h14V6M9 10h6"/>',
+      wallet: '<path d="M3 6h15a2 2 0 0 1 2 2v11H5a2 2 0 0 1-2-2Z"/><path d="M3 8V5a2 2 0 0 1 2-2h12M15 12h5v4h-5a2 2 0 0 1 0-4Z"/>',
+      shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',
+      settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
+      help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.8 1c0 2-3 2-3 4M12 18h.01"/>',
+      privacy: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+      box: '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5M12 13v9"/>',
+      service: '<path d="M4 13a8 8 0 0 1 16 0"/><path d="M4 13v5h4v-6H4M20 13v5h-4v-6h4M16 20h-4"/>',
+      info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>'
+    };
+
+    const icon = (name, size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name] || iconPaths.info}</svg>`;
+
+    const state = {
+      page: 'home',
+      previous: 'home',
+      healthPeriod: '7d',
+      recordFilter: 'all',
+      reportSection: 'cardio',
+      mode: '舒缓',
+      duration: 45,
+      remaining: 45 * 60,
+      running: false,
+      modalAction: null,
+      toastTimer: null,
+      tickTimer: null
+    };
+
+    const pages = [
+      { id: 'home', label: '首页概览', icon: 'home' },
+      { id: 'devices', label: '设备中心', icon: 'device' },
+      { id: 'control', label: '氧舱控制', icon: 'oxygen' },
+      { id: 'health', label: '健康中心', icon: 'health' },
+      { id: 'records', label: '氧疗记录', icon: 'calendar' },
+      { id: 'report', label: '多模态报告', icon: 'report' },
+      { id: 'orders', label: '商城与预约', icon: 'shop' },
+      { id: 'profile', label: '个人中心', icon: 'user' }
+    ];
+
+    const tabPages = [
+      { id: 'home', label: '首页', icon: 'home' },
+      { id: 'health', label: '健康', icon: 'health' },
+      { id: 'devices', label: '设备', icon: 'device' },
+      { id: 'profile', label: '我的', icon: 'user' }
+    ];
+
+    function header(title, back = true) {
+      if (!back) {
+        return `<div class="appbar-title"><div class="appbar-logo">${icon('logo')}</div><div class="appbar-copy"><strong>泰瑞医疗</strong><span>智慧氧疗 · 健康相伴</span></div></div><button class="circle-btn" data-action="toast" data-message="暂无新消息" aria-label="消息中心">${icon('bell',17)}</button>`;
+      }
+      return `<button class="back-btn" data-action="back" aria-label="返回">${icon('back',18)}</button><div class="appbar-heading">${title}</div><div class="mini-capsule" aria-hidden="true"><i></i><b></b><span></span></div>`;
+    }
+
+    function homePage() {
+      return `
+        <div class="greeting"><div><h1>早上好，林女士</h1><p>今天也要保持好状态</p></div><div class="avatar">林</div></div>
+        <div class="hero-health" data-action="go" data-page="health">
+          <div class="hero-top"><span class="hero-kicker"><i></i> 今日健康状态良好</span><span class="hero-date">8月19日</span></div>
+          <div class="hero-body"><div class="score-ring"><div class="score-value"><strong>86</strong><span>健康指数</span></div></div><div class="hero-summary"><strong>整体状态优于昨日</strong><p>血氧和心率保持平稳，建议完成一次45分钟舒缓氧疗。</p><div class="hero-tags"><span class="hero-tag">血氧 98%</span><span class="hero-tag">心率 72</span></div></div></div>
+        </div>
+
+        <div class="section-head"><h2>快捷服务</h2></div>
+        <div class="quick-grid">
+          <button class="quick-item" data-action="go" data-page="control"><span class="quick-icon">${icon('oxygen')}</span><span>氧舱控制</span></button>
+          <button class="quick-item" data-action="go" data-page="health"><span class="quick-icon">${icon('activity')}</span><span>健康数据</span></button>
+          <button class="quick-item" data-action="go" data-page="report"><span class="quick-icon">${icon('report')}</span><span>检测报告</span></button>
+          <button class="quick-item" data-action="go" data-page="records"><span class="quick-icon">${icon('calendar')}</span><span>氧疗记录</span></button>
+        </div>
+
+        <div class="section-head"><h2>今日健康</h2><button class="text-link" data-action="go" data-page="health">查看趋势</button></div>
+        <div class="metric-grid">
+          <div class="metric-card card"><span class="metric-label">${icon('oxygen')}血氧</span><strong>98</strong><em>%</em><small>正常范围</small></div>
+          <div class="metric-card card"><span class="metric-label">${icon('heart')}心率</span><strong>72</strong><em>bpm</em><small>平稳</small></div>
+          <div class="metric-card card"><span class="metric-label">${icon('moon')}睡眠</span><strong>7.4</strong><em>h</em><small>较昨日 +0.6</small></div>
+        </div>
+
+        <div class="section-head"><h2>最近氧疗</h2><button class="text-link" data-action="go" data-page="records">全部记录</button></div>
+        <div class="session-card card" data-action="record-detail"><div class="session-main"><div class="session-icon">${icon('oxygen')}</div><div class="session-copy"><strong>门店舒缓氧疗 · 45分钟</strong><span>泰瑞氧疗中心（滨江店） · 昨天 15:30</span></div>${icon('chevron',15)}</div><div class="session-result"><div class="result-point"><span>氧疗前血氧</span><strong>95%</strong></div><div class="result-arrow">→</div><div class="result-point"><span>氧疗后血氧</span><strong class="positive">98%</strong></div><div class="result-point"><span>改善幅度</span><strong class="positive">+3%</strong></div></div></div>
+
+        <div class="section-head"><h2>商城与服务</h2><span>原商城数据互通</span></div>
+        <div class="external-grid"><button class="external-card shop card" data-action="external" data-target="产品商城"><span class="external-badge">原小程序</span>${icon('shop')}<strong>氧疗产品</strong><span>选购氧舱、手环及耗材</span></button><button class="external-card store card" data-action="external" data-target="门店预约"><span class="external-badge">原小程序</span>${icon('location')}<strong>预约门店</strong><span>附近门店与氧疗服务</span></button></div>`;
+    }
+
+    function devicesPage() {
+      return `
+        <div class="section-head first"><h2>设备概览</h2><span>最近同步 09:38</span></div>
+        <div class="device-summary"><div class="summary-cell card"><span>已绑定设备</span><strong>2 台</strong><small>全部状态正常</small></div><div class="summary-cell card"><span>本月使用</span><strong>12 次</strong><small>累计 8.6 小时</small></div></div>
+        <div class="section-head"><h2>我的设备</h2><button class="text-link" data-action="bind-device">+ 添加设备</button></div>
+        <div class="device-card card">
+          <div class="device-card-main" data-action="go" data-page="control"><div class="device-visual"><span class="online-dot"><i></i>在线</span><div class="cabin-art"></div></div><div class="device-info"><div class="device-title"><div><strong>泰瑞智能氧舱 T3</strong><span>客厅 · TR-T3-02861</span></div>${icon('chevron',15)}</div><div class="device-meta"><div><span>运行状态</span><b>${state.running ? '运行中' : '空闲'}</b></div><div><span>今日使用</span><b>${state.running ? '进行中' : '45 分钟'}</b></div><div><span>舱内氧浓度</span><b>29.8%</b></div></div></div></div>
+          <div class="device-card-actions"><button data-action="go" data-page="control">控制设备</button><button data-action="toast" data-message="设备运行记录已打开">使用记录</button></div>
+        </div>
+        <div class="device-card card">
+          <div class="device-card-main"><div class="device-visual bracelet"><span class="online-dot"><i></i>已同步</span><div class="watch-art"></div></div><div class="device-info"><div class="device-title"><div><strong>泰瑞健康手环 S2</strong><span>我的手环 · TR-S2-93218</span></div>${icon('chevron',15)}</div><div class="device-meta"><div><span>设备电量</span><b>76%</b></div><div><span>佩戴状态</span><b>佩戴中</b></div><div><span>数据同步</span><b id="syncTime">刚刚</b></div></div></div></div>
+          <div class="device-card-actions"><button data-action="sync">${icon('sync',13)} 同步数据</button><button data-action="go" data-page="health">查看健康</button></div>
+        </div>
+        <button class="empty-add" data-action="bind-device">+ 扫码绑定新设备</button>
+        <div class="section-head"><h2>设备服务</h2></div>
+        <div class="menu-list card"><button class="menu-row" data-action="toast" data-message="设备状态全部正常"><span class="menu-row-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('bell')}</span><span>异常与告警</span><small>暂无异常</small>${icon('chevron',14)}</button><button class="menu-row" data-action="toast" data-message="已进入设备售后服务"><span class="menu-row-icon" style="color:var(--aqua);background:var(--aqua-soft)">${icon('service')}</span><span>设备售后服务</span>${icon('chevron',14)}</button></div>`;
+    }
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2,'0');
+      const s = (seconds % 60).toString().padStart(2,'0');
+      return `${m}:${s}`;
+    }
+
+    function controlPage() {
+      const total = state.duration * 60;
+      const progress = state.running ? Math.max(0, (total - state.remaining) / total * 360) : 0;
+      return `
+        <div class="control-hero"><div class="control-device-line"><strong>泰瑞智能氧舱 T3</strong><span><i></i>设备在线</span></div><div class="control-ring" id="controlRing" style="--progress:${progress}deg"><div class="control-time"><span>${state.running ? '本次剩余' : '设备当前空闲'}</span><strong id="remainingTime">${state.running ? formatTime(state.remaining) : state.duration + ':00'}</strong><small>${state.running ? '正在运行 · ' + state.mode + '模式' : '预计使用时长'}</small></div></div><div class="control-stats"><div><span>氧浓度</span><strong>${state.running ? '31.2' : '29.8'}%</strong></div><div><span>舱内压力</span><strong>${state.running ? '1.28' : '1.00'} ATA</strong></div><div><span>舱内温度</span><strong>24.6℃</strong></div></div></div>
+        <div class="setting-card card"><div class="setting-row"><div class="setting-label"><strong>氧疗模式</strong><span>根据身体状态选择模式</span></div><div class="segmented">${['舒缓','活力','睡眠'].map(m => `<button class="${state.mode===m?'active':''}" data-action="mode" data-mode="${m}" ${state.running?'disabled':''}>${m}</button>`).join('')}</div></div><div class="setting-row" style="display:block"><div class="setting-label"><strong>使用时长</strong><span>建议初次使用不超过45分钟</span></div><div class="duration-grid">${[30,45,60,90].map(d => `<button class="${state.duration===d?'active':''}" data-action="duration" data-duration="${d}" ${state.running?'disabled':''}>${d} 分钟</button>`).join('')}</div></div></div>
+        <button class="primary-action ${state.running?'running':''}" data-action="toggle-control">${icon(state.running?'pause':'play')} ${state.running?'结束本次氧疗':'开始氧疗'}</button>
+        <div class="sync-banner" style="margin-top:12px">${icon('shield')}为保障安全，远程启动前请确认使用者已进入氧舱、舱门已关闭且手环正常佩戴。</div>`;
+    }
+
+    const chartData = {
+      '7d': { value: 97.6, change: '+1.2%', points: [95,96,96.5,97,96.8,98,97.6], labels: ['周四','周五','周六','周日','周一','周二','今天'] },
+      '30d': { value: 97.2, change: '+0.8%', points: [95.4,95.8,96.2,95.9,96.7,97.1,96.8,97.4,97.2], labels: ['7/20','','','','8/3','','','','今天'] },
+      '90d': { value: 96.8, change: '+1.7%', points: [94.8,95.1,95.5,95.9,96.2,96.0,96.5,96.7,96.8], labels: ['5月','','','6月','','','7月','','今天'] }
+    };
+
+    function chartSvg(data) {
+      const w = 330, h = 110, pad = 14;
+      const min = Math.min(...data.points)-.8, max = Math.max(...data.points)+.8;
+      const coords = data.points.map((v,i) => [pad + i*(w-pad*2)/(data.points.length-1), 12 + (max-v)*(h-35)/(max-min)]);
+      const path = coords.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+      const area = `${path} L${coords[coords.length-1][0]},${h-18} L${coords[0][0]},${h-18} Z`;
+      return `<svg class="line-chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="血氧趋势图"><defs><linearGradient id="healthArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#276ef1" stop-opacity=".24"/><stop offset="1" stop-color="#276ef1" stop-opacity="0"/></linearGradient></defs><line class="grid" x1="${pad}" x2="${w-pad}" y1="25" y2="25"/><line class="grid" x1="${pad}" x2="${w-pad}" y1="55" y2="55"/><line class="grid" x1="${pad}" x2="${w-pad}" y1="85" y2="85"/><path class="area" d="${area}"/><path class="path" d="${path}"/>${coords.map((p,i)=>`<circle class="dot" cx="${p[0]}" cy="${p[1]}" r="${i===coords.length-1?4:2.6}"/>`).join('')}${data.labels.map((l,i)=>l?`<text x="${coords[i][0]}" y="106" text-anchor="middle">${l}</text>`:'').join('')}</svg>`;
+    }
+
+    function bars(values) { return `<div class="microbar">${values.map(v=>`<i style="height:${v}%"></i>`).join('')}</div>`; }
+
+    function healthPage() {
+      const d = chartData[state.healthPeriod];
+      return `
+        <div class="health-score-card card"><div class="mini-score"><div><strong>86</strong><span>健康指数</span></div></div><div class="health-score-copy"><strong>今日状态良好</strong><p>血氧、心率保持在正常范围，睡眠质量较昨日有所提升。</p><span class="status-tag"><i></i>状态稳定</span></div></div>
+        <div class="period-tabs">${[['7d','近7天'],['30d','近30天'],['90d','近90天']].map(x=>`<button class="${state.healthPeriod===x[0]?'active':''}" data-action="period" data-period="${x[0]}">${x[1]}</button>`).join('')}</div>
+        <div class="chart-card card"><div class="chart-title"><div><span>平均血氧饱和度</span><strong>${d.value}<small>%</small></strong></div><span class="trend-up">↗ ${d.change}</span></div>${chartSvg(d)}</div>
+        <div class="section-head"><h2>健康指标</h2><button class="text-link" data-action="sync">${icon('sync',12)} 同步手环</button></div>
+        <div class="health-metrics"><div class="health-metric card"><div class="health-metric-head"><span>静息心率</span><span style="color:var(--danger)">${icon('heart')}</span></div><strong>72</strong><em>bpm</em>${bars([45,62,50,73,58,82,66])}</div><div class="health-metric aqua card"><div class="health-metric-head"><span>平均血氧</span><span style="color:var(--aqua)">${icon('oxygen')}</span></div><strong>97.6</strong><em>%</em>${bars([52,64,68,58,78,89,75])}</div><div class="health-metric purple card"><div class="health-metric-head"><span>睡眠时长</span><span style="color:var(--purple)">${icon('moon')}</span></div><strong>7.4</strong><em>小时</em>${bars([66,72,54,78,88,82,75])}</div><div class="health-metric orange card"><div class="health-metric-head"><span>今日步数</span><span style="color:var(--orange)">${icon('activity')}</span></div><strong>6,248</strong><em>步</em>${bars([28,40,45,52,64,77,84])}</div></div>
+        <div class="section-head"><h2>氧疗效果</h2><button class="text-link" data-action="go" data-page="records">历史记录</button></div>
+        <div class="compare-card card"><div class="compare-head"><strong>最近一次氧疗血氧变化</strong><span>8月18日 · 45分钟</span></div><div class="compare-track"><i></i><i></i></div><div class="compare-labels"><div><strong>95%</strong>氧疗前</div><div style="text-align:right"><strong class="positive">98%</strong>氧疗后</div></div></div>`;
+    }
+
+    const records = [
+      { day:'18', month:'8月', type:'store', title:'门店舒缓氧疗', desc:'泰瑞氧疗中心（滨江店）', duration:'45分钟', before:'95%', after:'98%' },
+      { day:'16', month:'8月', type:'home', title:'家庭活力氧疗', desc:'泰瑞智能氧舱 T3', duration:'60分钟', before:'96%', after:'98%' },
+      { day:'13', month:'8月', type:'home', title:'家庭睡眠氧疗', desc:'泰瑞智能氧舱 T3', duration:'45分钟', before:'95%', after:'97%' },
+      { day:'09', month:'8月', type:'store', title:'门店综合氧疗', desc:'泰瑞氧疗中心（城西店）', duration:'60分钟', before:'94%', after:'98%' }
+    ];
+
+    function recordsPage() {
+      const filtered = records.filter(r => state.recordFilter==='all' || r.type===state.recordFilter);
+      return `<div class="filter-row">${[['all','全部记录'],['home','家庭氧疗'],['store','门店氧疗']].map(x=>`<button class="${state.recordFilter===x[0]?'active':''}" data-action="record-filter" data-filter="${x[0]}">${x[1]}</button>`).join('')}</div><div class="record-list">${filtered.map(r=>`<div class="record-card card" data-action="record-detail"><div class="record-top"><div class="record-date"><div><strong>${r.day}</strong><span>${r.month}</span></div></div><div class="record-copy"><strong>${r.title}</strong><span>${r.desc}</span></div><span class="record-type ${r.type==='home'?'home':''}">${r.type==='home'?'家庭':'门店'}</span>${icon('chevron',14)}</div><div class="record-bottom"><div><span>氧疗时长</span><strong>${r.duration}</strong></div><div><span>氧疗前血氧</span><strong>${r.before}</strong></div><div><span>氧疗后血氧</span><strong class="positive">${r.after}</strong></div></div></div>`).join('')}</div>`;
+    }
+
+    const reportSections = {
+      cardio: { title:'心肺功能', level:'状态良好', items:[['静息心率',82, '72 bpm'],['血氧水平',92,'98%'],['心率变异性',76,'48 ms'],['呼吸频率',85,'16 次/分']], advice:'心肺相关指标整体处于良好水平。建议保持每周3—4次舒缓氧疗，并结合适量有氧运动。' },
+      sleep: { title:'睡眠状态', level:'轻度改善', items:[['睡眠时长',78,'7.4 h'],['深睡占比',69,'21%'],['入睡效率',86,'良好'],['夜间血氧',89,'96%']], advice:'睡眠时长达标，深睡占比仍有提升空间。可在睡前2小时进行一次30分钟睡眠模式氧疗。' },
+      stress: { title:'压力状态', level:'状态平稳', items:[['压力指数',72,'正常'],['恢复能力',79,'良好'],['自主神经',75,'平衡'],['疲劳水平',68,'轻度']], advice:'近期压力状态基本平稳，存在轻度疲劳。建议保证规律作息，并适当降低高强度活动。' },
+      body: { title:'身体机能', level:'综合良好', items:[['身体活力',83,'良好'],['代谢状态',74,'正常'],['运动恢复',79,'良好'],['综合机能',81,'良好']], advice:'综合机能表现良好。持续记录氧疗和日常健康数据，有助于获得更准确的长期趋势。' }
+    };
+
+    function reportPage() {
+      const s = reportSections[state.reportSection];
+      return `<div class="report-hero"><div class="report-meta"><span>多模态综合检测报告</span><span class="report-badge">已完成</span></div><div class="report-main"><div class="report-gauge"><div><strong>82</strong><span>综合评估</span></div></div><div class="report-copy"><strong>整体状态良好</strong><p>本次共分析 24 项健康指标，较上次检测提升 4 分。</p></div></div></div><div class="report-tabs">${[['cardio','心肺功能'],['sleep','睡眠状态'],['stress','压力状态'],['body','身体机能']].map(x=>`<button class="${state.reportSection===x[0]?'active':''}" data-action="report-tab" data-section="${x[0]}">${x[1]}</button>`).join('')}</div><div class="report-section card"><div class="report-section-head"><strong>${s.title}指标</strong><span class="level-good">● ${s.level}</span></div><div class="indicator-list">${s.items.map(i=>`<div class="indicator-row"><span>${i[0]}</span><div class="indicator-bar"><i style="width:${i[1]}%"></i></div><strong>${i[2]}</strong></div>`).join('')}</div></div><div class="report-advice">${icon('sparkles')}<div><strong>健康建议</strong><br>${s.advice}</div></div><button class="primary-action" data-action="toast" data-message="报告分享卡片已生成">${icon('link')} 分享检测报告</button>`;
+    }
+
+    function profilePage() {
+      return `<div class="profile-card"><div class="profile-top"><div class="profile-avatar">林</div><div class="profile-copy"><strong>林女士</strong><span>健康档案已完善 92%</span></div><span class="member-chip">黄金会员</span></div><div class="profile-stats"><div><strong>2,680</strong><span>积分</span></div><div><strong>8</strong><span>剩余次卡</span></div><div><strong>12</strong><span>本月氧疗</span></div></div></div><div class="section-head"><h2>我的订单</h2><button class="text-link" data-action="go" data-page="orders">全部订单</button></div><div class="order-shortcuts card"><button data-action="go" data-page="orders">${icon('wallet')}待付款<span class="count-dot">1</span></button><button data-action="go" data-page="orders">${icon('box')}待收货</button><button data-action="go" data-page="orders">${icon('calendar')}待服务<span class="count-dot">2</span></button><button data-action="external" data-target="售后服务">${icon('service')}退款/售后</button></div><div class="section-head"><h2>健康与设备</h2></div><div class="menu-list card"><button class="menu-row" data-action="go" data-page="devices"><span class="menu-row-icon" style="color:var(--brand);background:var(--brand-soft)">${icon('device')}</span><span>我的设备</span><small>2 台</small>${icon('chevron',14)}</button><button class="menu-row" data-action="go" data-page="report"><span class="menu-row-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('report')}</span><span>我的检测报告</span><small>3 份</small>${icon('chevron',14)}</button><button class="menu-row" data-action="go" data-page="records"><span class="menu-row-icon" style="color:var(--aqua);background:var(--aqua-soft)">${icon('oxygen')}</span><span>我的氧疗记录</span><small>累计 36 次</small>${icon('chevron',14)}</button></div><div class="section-head"><h2>服务与设置</h2></div><div class="menu-list card"><button class="menu-row" data-action="toast" data-message="健康档案已打开"><span class="menu-row-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('user')}</span><span>个人与健康档案</span>${icon('chevron',14)}</button><button class="menu-row" data-action="toast" data-message="数据授权记录已打开"><span class="menu-row-icon" style="color:var(--aqua);background:var(--aqua-soft)">${icon('shield')}</span><span>数据授权与隐私</span>${icon('chevron',14)}</button><button class="menu-row" data-action="toast" data-message="设置中心已打开"><span class="menu-row-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('settings')}</span><span>系统设置</span>${icon('chevron',14)}</button></div>`;
+    }
+
+    function ordersPage() {
+      return `<div class="sync-banner">${icon('sync')}以下订单和预约数据同步自客户原有商城系统，交易及售后操作将跳转至原小程序办理。</div><div class="filter-row"><button class="active">全部</button><button>商城订单</button><button>服务预约</button></div><div class="order-card card"><div class="order-store"><strong>泰瑞医疗官方商城</strong><span>待收货</span></div><div class="order-product"><div class="order-product-art">${icon('watch')}</div><div class="order-product-copy"><strong>泰瑞健康手环 S2</strong><span>星空灰 · 标准款 ×1</span><b>¥ 699.00</b></div></div><div class="order-actions"><button class="outline-btn" data-action="external" data-target="查看物流">查看物流</button><button class="outline-btn primary" data-action="external" data-target="订单详情">订单详情</button></div></div><div class="order-card card"><div class="order-store"><strong>泰瑞氧疗中心（滨江店）</strong><span style="color:var(--aqua)">待服务</span></div><div class="order-product"><div class="order-product-art" style="color:var(--aqua);background:var(--aqua-soft)">${icon('oxygen')}</div><div class="order-product-copy"><strong>专业舒缓氧疗 · 单次</strong><span>预约时间：8月22日 14:30</span><b>¥ 168.00</b></div></div><div class="order-actions"><button class="outline-btn" data-action="external" data-target="门店导航">门店导航</button><button class="outline-btn primary" data-action="external" data-target="预约详情">查看预约</button></div></div><div class="order-card card"><div class="order-store"><strong>泰瑞医疗官方商城</strong><span style="color:var(--muted)">已完成</span></div><div class="order-product"><div class="order-product-art">${icon('box')}</div><div class="order-product-copy"><strong>氧舱专用清洁护理套装</strong><span>标准套装 ×1</span><b>¥ 128.00</b></div></div><div class="order-actions"><button class="outline-btn" data-action="external" data-target="再次购买">再次购买</button><button class="outline-btn primary" data-action="external" data-target="订单详情">订单详情</button></div></div>`;
+    }
+
+    const pageRenderers = { home: homePage, devices: devicesPage, control: controlPage, health: healthPage, records: recordsPage, report: reportPage, orders: ordersPage, profile: profilePage };
+    const pageTitles = { devices:'设备中心', control:'氧舱远程控制', health:'健康中心', records:'氧疗记录', report:'多模态检测报告', orders:'商城与预约', profile:'个人中心' };
+
+    function render() {
+      document.getElementById('appbar').innerHTML = state.page === 'home' ? header('', false) : header(pageTitles[state.page]);
+      document.getElementById('screen').innerHTML = pageRenderers[state.page]();
+      document.getElementById('screen').scrollTop = 0;
+      document.getElementById('tabbar').innerHTML = tabPages.map(t => `<button class="${state.page===t.id?'active':''}" data-action="go" data-page="${t.id}">${icon(t.icon)}<span>${t.label}</span></button>`).join('');
+      document.getElementById('screenMenu').innerHTML = pages.map(p => `<button class="${state.page===p.id?'active':''}" data-action="go" data-page="${p.id}"><span class="menu-icon">${icon(p.icon)}</span>${p.label}</button>`).join('');
+    }
+
+    function navigate(page) {
+      if (!pageRenderers[page]) return;
+      if (state.page !== page) state.previous = state.page;
+      state.page = page;
+      render();
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(state.toastTimer);
+      state.toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function openModal({ title, text, confirm='确认', action='generic', iconName='info' }) {
+      state.modalAction = action;
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalText').textContent = text;
+      document.getElementById('modalConfirm').textContent = confirm;
+      document.getElementById('modalIcon').innerHTML = icon(iconName);
+      document.getElementById('modalLayer').classList.add('show');
+    }
+
+    function closeModal() { document.getElementById('modalLayer').classList.remove('show'); state.modalAction = null; }
+
+    function startTimer() {
+      clearInterval(state.tickTimer);
+      if (!state.running) return;
+      state.tickTimer = setInterval(() => {
+        if (!state.running || state.remaining <= 0) {
+          clearInterval(state.tickTimer);
+          if (state.remaining <= 0) { state.running = false; showToast('本次氧疗已完成'); render(); }
+          return;
+        }
+        state.remaining -= 1;
+        const timeEl = document.getElementById('remainingTime');
+        const ring = document.getElementById('controlRing');
+        if (timeEl) timeEl.textContent = formatTime(state.remaining);
+        if (ring) ring.style.setProperty('--progress', `${(state.duration*60-state.remaining)/(state.duration*60)*360}deg`);
+      }, 1000);
+    }
+
+    function confirmModalAction() {
+      const action = state.modalAction;
+      closeModal();
+      if (action === 'start') {
+        state.running = true;
+        state.remaining = state.duration * 60;
+        render();
+        startTimer();
+        showToast('氧舱已安全启动');
+      } else if (action === 'stop') {
+        state.running = false;
+        clearInterval(state.tickTimer);
+        render();
+        showToast('本次氧疗记录已保存');
+      } else if (action === 'external') {
+        showToast('正在打开客户原商城小程序…');
+      } else if (action === 'bind') {
+        showToast('已打开扫码绑定');
+      } else if (action === 'record') {
+        showToast('健康分析详情已打开');
+      }
+    }
+
+    document.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-action]');
+      if (!target) return;
+      const action = target.dataset.action;
+      if (action === 'go') navigate(target.dataset.page);
+      if (action === 'back') navigate(state.previous && state.previous !== state.page ? state.previous : 'home');
+      if (action === 'toast') showToast(target.dataset.message || '功能已触发');
+      if (action === 'period') { state.healthPeriod = target.dataset.period; render(); }
+      if (action === 'record-filter') { state.recordFilter = target.dataset.filter; render(); }
+      if (action === 'report-tab') { state.reportSection = target.dataset.section; render(); }
+      if (action === 'mode' && !state.running) { state.mode = target.dataset.mode; render(); }
+      if (action === 'duration' && !state.running) { state.duration = Number(target.dataset.duration); state.remaining = state.duration * 60; render(); }
+      if (action === 'toggle-control') {
+        if (state.running) openModal({title:'结束本次氧疗？',text:'结束后将停止氧舱运行，并保存本次设备与手环数据。',confirm:'确认结束',action:'stop',iconName:'pause'});
+        else openModal({title:'确认开始氧疗',text:`将以${state.mode}模式运行 ${state.duration} 分钟。请确认舱门关闭、环境安全且手环已正常佩戴。`,confirm:'安全启动',action:'start',iconName:'shield'});
+      }
+      if (action === 'external') openModal({title:`前往${target.dataset.target || '原商城'}`,text:'该业务由客户原有商城小程序提供，泰瑞医疗小程序将携带当前用户身份跳转办理。',confirm:'继续前往',action:'external',iconName:'link'});
+      if (action === 'bind-device') openModal({title:'绑定新设备',text:'请扫描氧舱或手环机身二维码，完成设备验证与绑定。',confirm:'开始扫码',action:'bind',iconName:'device'});
+      if (action === 'record-detail') openModal({title:'氧疗效果详情',text:'本次氧疗已关联氧舱运行数据和同时段手环健康数据，可进一步查看完整趋势分析。',confirm:'查看分析',action:'record',iconName:'trend'});
+      if (action === 'sync') {
+        const svg = target.querySelector('svg');
+        if (svg) svg.classList.add('spin');
+        target.disabled = true;
+        setTimeout(() => { showToast('手环数据同步完成'); if (state.page==='devices' || state.page==='health') render(); }, 900);
+      }
+      if (action === 'modal-cancel') closeModal();
+      if (action === 'modal-confirm') confirmModalAction();
+    });
+
+    document.getElementById('sideBrandIcon').innerHTML = icon('logo');
+    const now = new Date();
+    document.getElementById('clock').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    render();
+  </script>
+</body>
+</html>

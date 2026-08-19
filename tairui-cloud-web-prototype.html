@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>泰瑞医疗云平台 Web端原型</title>
+  <style>
+    :root {
+      --navy: #14233d;
+      --navy-2: #1b3153;
+      --primary: #2871f2;
+      --primary-deep: #1959c8;
+      --primary-soft: #eaf2ff;
+      --cyan: #1eb6a5;
+      --cyan-soft: #e8f8f5;
+      --purple: #7165e8;
+      --purple-soft: #efedff;
+      --orange: #f59a52;
+      --orange-soft: #fff2e8;
+      --red: #e85b66;
+      --red-soft: #fff0f1;
+      --green: #18a878;
+      --green-soft: #e9f8f2;
+      --ink: #17243d;
+      --text: #475571;
+      --muted: #8b97ab;
+      --line: #e7ecf4;
+      --surface: #ffffff;
+      --canvas: #f4f7fb;
+      --shadow: 0 8px 26px rgba(31, 59, 108, .07);
+      --sidebar: 236px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: var(--sidebar) minmax(0, 1fr); transition: grid-template-columns .25s ease; }
+    .app-shell.collapsed { --sidebar: 76px; }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      color: #dbe7f8;
+      background:
+        radial-gradient(circle at 20% 8%, rgba(49, 132, 243, .22), transparent 28%),
+        linear-gradient(180deg, var(--navy) 0%, #101d33 100%);
+      box-shadow: 8px 0 30px rgba(15, 30, 52, .08);
+    }
+
+    .brand {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 0 0 76px;
+      padding: 0 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .brand-mark { width: 40px; height: 40px; flex: 0 0 40px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: linear-gradient(145deg,#2e7df5,#28b3bd); box-shadow: 0 9px 20px rgba(25,103,215,.28); }
+    .brand-mark svg { width: 23px; height: 23px; }
+    .brand-copy { min-width: 0; white-space: nowrap; }
+    .brand-copy strong { display: block; color: #fff; font-size: 16px; letter-spacing: .04em; }
+    .brand-copy span { display: block; margin-top: 3px; color: #8295b3; font-size: 10px; }
+    .collapsed .brand-copy { opacity: 0; width: 0; }
+
+    .nav-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 10px; scrollbar-width: none; }
+    .nav-scroll::-webkit-scrollbar { display: none; }
+    .nav-section { margin: 6px 10px 8px; color: #7185a5; font-size: 10px; font-weight: 700; letter-spacing: .11em; white-space: nowrap; }
+    .collapsed .nav-section { opacity: 0; height: 4px; margin: 2px 0; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-item { position: relative; width: 100%; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 11px; color: #aabbd3; background: transparent; cursor: pointer; text-align: left; white-space: nowrap; transition: .18s ease; }
+    .nav-item:hover { color: #fff; background: rgba(255,255,255,.06); }
+    .nav-item.active { color: #fff; background: linear-gradient(90deg,rgba(48,126,243,.32),rgba(49,129,244,.13)); font-weight: 700; }
+    .nav-item.active::before { content:""; position:absolute; left:-10px; top:9px; bottom:9px; width:3px; border-radius:3px; background:#55b8ff; }
+    .nav-icon { width: 22px; height: 22px; flex: 0 0 22px; display: grid; place-items: center; }
+    .nav-icon svg { width: 19px; height: 19px; }
+    .nav-label { overflow: hidden; transition: opacity .2s; }
+    .collapsed .nav-label { opacity: 0; width: 0; }
+    .nav-badge { margin-left:auto; min-width:18px; height:18px; display:grid; place-items:center; padding:0 5px; border-radius:9px; color:#fff; background:var(--red); font-size:9px; }
+    .collapsed .nav-badge { position:absolute; right:6px; top:5px; min-width:7px; width:7px; height:7px; padding:0; font-size:0; }
+
+    .sidebar-foot { flex: 0 0 auto; padding: 12px; border-top: 1px solid rgba(255,255,255,.08); }
+    .admin-mini { display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:rgba(255,255,255,.055); }
+    .admin-avatar { width:32px; height:32px; flex:0 0 32px; display:grid; place-items:center; border-radius:10px; color:#fff; background:linear-gradient(145deg,#6d79ea,#4e61be); font-size:11px; font-weight:700; }
+    .admin-copy { flex:1; min-width:0; white-space:nowrap; }
+    .admin-copy strong { display:block; color:#fff; font-size:11px; }
+    .admin-copy span { display:block; color:#8192ad; font-size:9px; margin-top:2px; }
+    .collapsed .admin-copy, .collapsed .admin-mini > svg { display:none; }
+
+    .main-shell { min-width: 0; }
+    .topbar { position: sticky; top: 0; z-index: 15; height: 68px; display: flex; align-items: center; gap: 18px; padding: 0 24px; background: rgba(255,255,255,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+    .collapse-btn, .icon-btn { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 11px; color: var(--text); background: #fff; cursor: pointer; }
+    .collapse-btn:hover, .icon-btn:hover { color: var(--primary); border-color:#c8d9fb; background:var(--primary-soft); }
+    .top-search { position: relative; width: min(380px, 36vw); }
+    .top-search svg { position:absolute; left:12px; top:50%; width:16px; height:16px; color:var(--muted); transform:translateY(-50%); }
+    .top-search input { width:100%; height:38px; padding:0 14px 0 38px; border:1px solid var(--line); border-radius:11px; outline:none; color:var(--ink); background:#f8fafc; font-size:11px; }
+    .top-search input:focus { border-color:#adc8fb; background:#fff; box-shadow:0 0 0 3px rgba(40,113,242,.08); }
+    .top-space { flex:1; }
+    .system-status { display:flex; align-items:center; gap:7px; padding:7px 10px; border-radius:10px; color:var(--green); background:var(--green-soft); font-size:9px; }
+    .system-status i { width:6px; height:6px; border-radius:50%; background:currentColor; box-shadow:0 0 0 4px rgba(24,168,120,.1); }
+    .notify-wrap { position:relative; }
+    .notify-dot { position:absolute; right:-1px; top:-2px; width:8px; height:8px; border:2px solid #fff; border-radius:50%; background:var(--red); }
+    .top-admin { display:flex; align-items:center; gap:9px; padding-left:4px; }
+    .top-admin .admin-avatar { width:34px; height:34px; }
+    .top-admin strong { display:block; font-size:11px; }
+    .top-admin span { display:block; color:var(--muted); font-size:9px; margin-top:2px; }
+
+    .content { padding: 22px 24px 38px; }
+    .page-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:18px; }
+    .page-title h1 { margin:0; font-size:22px; letter-spacing:-.02em; }
+    .page-title p { margin:7px 0 0; color:var(--muted); font-size:11px; }
+    .page-actions { display:flex; align-items:center; gap:9px; }
+
+    .btn { height:36px; display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:0 14px; border:1px solid var(--line); border-radius:10px; color:var(--text); background:#fff; cursor:pointer; font-size:11px; transition:.17s ease; }
+    .btn:hover { color:var(--primary); border-color:#b9cdf7; background:var(--primary-soft); }
+    .btn.primary { color:#fff; border-color:var(--primary); background:linear-gradient(135deg,var(--primary),#3c88f3); box-shadow:0 7px 15px rgba(40,113,242,.18); }
+    .btn.primary:hover { color:#fff; background:var(--primary-deep); }
+    .btn.ghost { border-color:transparent; background:transparent; }
+    .btn.danger { color:var(--red); border-color:#fac8cc; background:var(--red-soft); }
+    .btn.small { height:30px; padding:0 10px; font-size:10px; border-radius:8px; }
+    .btn svg { width:15px; height:15px; }
+
+    .range-switch { display:inline-flex; padding:3px; border-radius:11px; background:#e9eef6; }
+    .range-switch button { height:30px; min-width:52px; padding:0 10px; border:0; border-radius:8px; color:var(--muted); background:transparent; cursor:pointer; font-size:10px; }
+    .range-switch button.active { color:var(--primary); background:#fff; font-weight:700; box-shadow:0 3px 8px rgba(36,58,98,.08); }
+
+    .card { border:1px solid rgba(229,235,244,.95); border-radius:15px; background:#fff; box-shadow:var(--shadow); }
+    .stats-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-bottom:14px; }
+    .stat-card { position:relative; overflow:hidden; min-height:116px; padding:17px; }
+    .stat-card::after { content:""; position:absolute; width:76px; height:76px; right:-28px; bottom:-35px; border-radius:50%; background:currentColor; opacity:.05; }
+    .stat-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .stat-label { color:var(--muted); font-size:10px; }
+    .stat-icon { width:34px; height:34px; display:grid; place-items:center; border-radius:11px; }
+    .stat-icon svg { width:18px; height:18px; }
+    .stat-value { display:flex; align-items:baseline; gap:4px; margin-top:11px; }
+    .stat-value strong { font-size:25px; letter-spacing:-.03em; }
+    .stat-value span { color:var(--muted); font-size:10px; }
+    .stat-foot { display:flex; align-items:center; gap:6px; margin-top:7px; color:var(--muted); font-size:9px; }
+    .delta-up { color:var(--green); }
+    .delta-down { color:var(--red); }
+    .blue .stat-icon { color:var(--primary); background:var(--primary-soft); }
+    .cyan .stat-icon { color:var(--cyan); background:var(--cyan-soft); }
+    .purple .stat-icon { color:var(--purple); background:var(--purple-soft); }
+    .orange .stat-icon { color:var(--orange); background:var(--orange-soft); }
+
+    .dashboard-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(270px,.75fr); gap:14px; margin-bottom:14px; }
+    .panel { padding:17px; }
+    .panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:14px; }
+    .panel-head h2 { margin:0; font-size:14px; }
+    .panel-head p { margin:5px 0 0; color:var(--muted); font-size:9px; }
+    .panel-tools { display:flex; align-items:center; gap:8px; }
+    .legend { display:flex; flex-wrap:wrap; gap:12px; }
+    .legend span { display:flex; align-items:center; gap:5px; color:var(--muted); font-size:9px; }
+    .legend i { width:7px; height:7px; border-radius:50%; }
+
+    .trend-chart { width:100%; height:246px; display:block; overflow:visible; }
+    .trend-chart .grid { stroke:#edf1f6; stroke-width:1; }
+    .trend-chart text { fill:#97a2b5; font-size:9px; }
+    .trend-chart .area { fill:url(#dashArea); }
+    .trend-chart .line { fill:none; stroke:var(--primary); stroke-width:2.7; stroke-linecap:round; stroke-linejoin:round; }
+    .trend-chart .line2 { fill:none; stroke:var(--cyan); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+    .trend-chart .dot { fill:#fff; stroke:var(--primary); stroke-width:2; }
+
+    .donut-wrap { display:grid; place-items:center; padding:3px 0 10px; }
+    .donut { --p:84%; position:relative; width:150px; height:150px; display:grid; place-items:center; border-radius:50%; background:conic-gradient(var(--primary) 0 61%,var(--cyan) 61% 84%,#e6ebf3 84%); }
+    .donut::before { content:""; position:absolute; width:105px; height:105px; border-radius:50%; background:#fff; }
+    .donut-copy { position:relative; z-index:1; text-align:center; }
+    .donut-copy strong { display:block; font-size:26px; }
+    .donut-copy span { color:var(--muted); font-size:9px; }
+    .device-legend { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+    .device-legend div { padding:10px; border-radius:11px; background:#f7f9fc; }
+    .device-legend span { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:9px; }
+    .device-legend i { width:7px; height:7px; border-radius:50%; }
+    .device-legend strong { display:block; margin-top:5px; font-size:14px; }
+
+    .bottom-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr); gap:14px; }
+    .table-wrap { overflow:auto; }
+    table { width:100%; border-collapse:collapse; }
+    th { padding:11px 12px; color:var(--muted); background:#f8fafc; font-size:9px; font-weight:650; text-align:left; white-space:nowrap; }
+    td { padding:12px; border-bottom:1px solid var(--line); color:var(--text); font-size:10px; vertical-align:middle; }
+    tbody tr:last-child td { border-bottom:0; }
+    tbody tr.clickable { cursor:pointer; }
+    tbody tr.clickable:hover td { background:#f8fbff; }
+    .cell-main { display:flex; align-items:center; gap:9px; min-width:145px; }
+    .cell-avatar { width:30px; height:30px; flex:0 0 30px; display:grid; place-items:center; border-radius:9px; color:var(--primary); background:var(--primary-soft); font-size:9px; font-weight:700; }
+    .cell-copy strong { display:block; color:var(--ink); font-size:10px; font-weight:650; }
+    .cell-copy span { display:block; color:var(--muted); font-size:8px; margin-top:3px; }
+    .status { display:inline-flex; align-items:center; gap:5px; padding:4px 7px; border-radius:8px; font-size:8px; white-space:nowrap; }
+    .status::before { content:""; width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .status.online, .status.done { color:var(--green); background:var(--green-soft); }
+    .status.running { color:var(--primary); background:var(--primary-soft); }
+    .status.offline { color:var(--muted); background:#eef1f5; }
+    .status.warning { color:var(--orange); background:var(--orange-soft); }
+    .status.error { color:var(--red); background:var(--red-soft); }
+    .status.syncing { color:var(--purple); background:var(--purple-soft); }
+    .rank { width:22px; height:22px; display:grid; place-items:center; border-radius:7px; color:var(--muted); background:#f0f3f7; font-size:9px; }
+    .rank.top { color:#9b6512; background:#fff0c6; font-weight:700; }
+    .progress { width:90px; height:6px; border-radius:5px; background:#edf1f6; overflow:hidden; }
+    .progress i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--primary),#50b0ef); }
+
+    .alert-list { display:grid; gap:9px; }
+    .alert-item { display:flex; align-items:flex-start; gap:10px; padding:11px; border-radius:11px; background:#f8fafc; cursor:pointer; }
+    .alert-item:hover { background:#f1f6ff; }
+    .alert-icon { width:29px; height:29px; flex:0 0 29px; display:grid; place-items:center; border-radius:9px; }
+    .alert-icon svg { width:15px; height:15px; }
+    .alert-copy { flex:1; min-width:0; }
+    .alert-copy strong { display:block; font-size:10px; }
+    .alert-copy span { display:block; margin-top:4px; color:var(--muted); font-size:8px; line-height:1.4; }
+    .alert-time { color:var(--muted); font-size:8px; white-space:nowrap; }
+
+    .toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:9px; padding:13px; margin-bottom:13px; }
+    .search-field { position:relative; width:240px; }
+    .search-field svg { position:absolute; left:11px; top:50%; width:15px; height:15px; color:var(--muted); transform:translateY(-50%); }
+    .field, .select { height:34px; border:1px solid var(--line); border-radius:9px; outline:none; color:var(--text); background:#fff; font-size:10px; }
+    .field { width:100%; padding:0 11px 0 34px; }
+    .select { min-width:112px; padding:0 28px 0 10px; }
+    .field:focus, .select:focus { border-color:#adc7f7; box-shadow:0 0 0 3px rgba(40,113,242,.07); }
+    .toolbar-spacer { flex:1; }
+    .result-count { color:var(--muted); font-size:9px; }
+
+    .page-card { overflow:hidden; }
+    .table-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line); }
+    .table-head h2 { margin:0; font-size:13px; }
+    .table-head span { color:var(--muted); font-size:9px; }
+    .pagination { display:flex; align-items:center; justify-content:space-between; padding:12px 15px; border-top:1px solid var(--line); color:var(--muted); font-size:9px; }
+    .page-buttons { display:flex; gap:5px; }
+    .page-buttons button { width:27px; height:27px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-size:9px; }
+    .page-buttons button.active { color:#fff; border-color:var(--primary); background:var(--primary); }
+
+    .two-col { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr); gap:14px; }
+    .store-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; }
+    .store-card { overflow:hidden; cursor:pointer; }
+    .store-cover { position:relative; height:88px; display:flex; align-items:flex-end; padding:13px; color:#fff; background:linear-gradient(135deg,#2772ef,#28aaa9); }
+    .store-cover::after { content:""; position:absolute; width:110px; height:110px; right:-35px; top:-55px; border:20px solid rgba(255,255,255,.08); border-radius:50%; }
+    .store-cover.purple { background:linear-gradient(135deg,#6659d7,#9483eb); }
+    .store-cover.orange { background:linear-gradient(135deg,#e98445,#f3b463); }
+    .store-cover strong { position:relative; z-index:1; font-size:12px; }
+    .store-body { padding:13px; }
+    .store-line { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .store-line span { color:var(--muted); font-size:8px; }
+    .store-kpis { display:grid; grid-template-columns:repeat(3,1fr); margin-top:12px; padding-top:11px; border-top:1px solid var(--line); }
+    .store-kpis div { text-align:center; }
+    .store-kpis strong { display:block; font-size:12px; }
+    .store-kpis span { color:var(--muted); font-size:8px; }
+
+    .report-layout { display:grid; grid-template-columns:360px minmax(0,1fr); gap:14px; }
+    .report-list { overflow:hidden; }
+    .report-filter { padding:13px; border-bottom:1px solid var(--line); }
+    .report-items { max-height:650px; overflow:auto; }
+    .report-item { display:flex; align-items:center; gap:10px; padding:13px; border-bottom:1px solid var(--line); cursor:pointer; }
+    .report-item:hover, .report-item.active { background:#f5f8ff; }
+    .report-item.active { box-shadow:inset 3px 0 0 var(--primary); }
+    .report-score { width:40px; height:40px; flex:0 0 40px; display:grid; place-items:center; border-radius:12px; color:var(--purple); background:var(--purple-soft); font-size:13px; font-weight:700; }
+    .report-item-copy { flex:1; min-width:0; }
+    .report-item-copy strong { display:block; font-size:10px; }
+    .report-item-copy span { display:block; margin-top:4px; color:var(--muted); font-size:8px; }
+    .report-preview { padding:18px; }
+    .report-user { display:flex; align-items:center; gap:11px; }
+    .report-user .cell-avatar { width:40px; height:40px; flex-basis:40px; border-radius:12px; }
+    .report-user strong { display:block; font-size:13px; }
+    .report-user span { display:block; margin-top:3px; color:var(--muted); font-size:9px; }
+    .report-summary { display:grid; grid-template-columns:180px 1fr; gap:20px; align-items:center; margin-top:18px; padding:17px; border-radius:14px; background:linear-gradient(145deg,#f8f7ff,#f4f9ff); }
+    .radar { position:relative; width:150px; height:150px; margin:auto; }
+    .radar-ring { position:absolute; inset:0; border:1px solid #d9dff0; transform:rotate(45deg); border-radius:34px; }
+    .radar-ring:nth-child(2) { inset:25px; border-radius:23px; }
+    .radar-ring:nth-child(3) { inset:50px; border-radius:12px; }
+    .radar-shape { position:absolute; inset:22px; clip-path:polygon(50% 0,93% 29%,84% 83%,48% 100%,6% 67%,13% 18%); background:rgba(113,101,232,.23); border:2px solid var(--purple); }
+    .report-score-big strong { display:block; font-size:30px; }
+    .report-score-big span { color:var(--muted); font-size:9px; }
+    .report-score-big p { margin:9px 0 0; color:var(--text); font-size:10px; line-height:1.6; }
+    .indicator-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    .indicator { padding:12px; border:1px solid var(--line); border-radius:11px; }
+    .indicator-head { display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:9px; }
+    .indicator-head strong { color:var(--ink); font-size:11px; }
+    .indicator .progress { width:100%; margin-top:9px; }
+
+    .source-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; margin-bottom:14px; }
+    .source-card { padding:15px; }
+    .source-top { display:flex; align-items:flex-start; gap:11px; }
+    .source-logo { width:38px; height:38px; flex:0 0 38px; display:grid; place-items:center; border-radius:12px; color:var(--primary); background:var(--primary-soft); }
+    .source-logo svg { width:20px; height:20px; }
+    .source-copy { flex:1; min-width:0; }
+    .source-copy strong { display:block; font-size:11px; }
+    .source-copy span { display:block; margin-top:4px; color:var(--muted); font-size:8px; }
+    .source-meta { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:13px; }
+    .source-meta div { padding:8px; border-radius:9px; background:#f7f9fc; }
+    .source-meta span { display:block; color:var(--muted); font-size:8px; }
+    .source-meta strong { display:block; margin-top:4px; font-size:10px; }
+    .source-actions { display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding-top:11px; border-top:1px solid var(--line); }
+
+    .flow-card { padding:18px; }
+    .data-flow { display:grid; grid-template-columns:1fr 56px 1.2fr 56px 1fr; align-items:center; gap:6px; margin-top:20px; }
+    .flow-group { display:grid; gap:8px; }
+    .flow-node { display:flex; align-items:center; gap:8px; min-height:44px; padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:#fff; font-size:9px; }
+    .flow-node svg { width:16px; height:16px; color:var(--primary); }
+    .flow-center { padding:18px; color:#fff; text-align:center; border-radius:15px; background:linear-gradient(135deg,var(--primary),#2fa3c0); box-shadow:0 12px 25px rgba(40,113,242,.2); }
+    .flow-center svg { width:28px; height:28px; }
+    .flow-center strong { display:block; margin-top:8px; font-size:12px; }
+    .flow-center span { display:block; margin-top:4px; color:rgba(255,255,255,.72); font-size:8px; }
+    .flow-arrow { position:relative; height:1px; background:#b9c8df; }
+    .flow-arrow::after { content:""; position:absolute; right:-1px; top:-4px; border-left:6px solid #91a5c3; border-top:4px solid transparent; border-bottom:4px solid transparent; }
+
+    .drawer-layer { position:fixed; z-index:50; inset:0; display:flex; justify-content:flex-end; background:rgba(16,29,51,.3); opacity:0; visibility:hidden; transition:.2s ease; }
+    .drawer-layer.show { opacity:1; visibility:visible; }
+    .drawer { width:min(540px,94vw); height:100%; display:flex; flex-direction:column; background:#fff; box-shadow:-16px 0 45px rgba(21,38,67,.16); transform:translateX(36px); transition:.25s ease; }
+    .drawer-layer.show .drawer { transform:translateX(0); }
+    .drawer-head { height:66px; display:flex; align-items:center; gap:12px; flex:0 0 66px; padding:0 18px; border-bottom:1px solid var(--line); }
+    .drawer-head h2 { flex:1; margin:0; font-size:16px; }
+    .drawer-body { flex:1; overflow:auto; padding:18px; }
+    .detail-hero { padding:17px; border-radius:15px; color:#fff; background:linear-gradient(135deg,#2065d8,#2f8eea 55%,#27aaa7); }
+    .detail-hero-top { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .detail-hero strong { font-size:15px; }
+    .detail-hero p { margin:6px 0 0; color:rgba(255,255,255,.72); font-size:9px; }
+    .detail-kpis { display:grid; grid-template-columns:repeat(3,1fr); margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,.18); }
+    .detail-kpis div { text-align:center; }
+    .detail-kpis span { display:block; color:rgba(255,255,255,.64); font-size:8px; }
+    .detail-kpis strong { display:block; margin-top:4px; font-size:12px; }
+    .detail-section { margin-top:19px; }
+    .detail-section h3 { margin:0 0 10px; font-size:12px; }
+    .detail-info { display:grid; grid-template-columns:1fr 1fr; gap:1px; overflow:hidden; border:1px solid var(--line); border-radius:12px; background:var(--line); }
+    .detail-info div { padding:11px; background:#fff; }
+    .detail-info span { display:block; color:var(--muted); font-size:8px; }
+    .detail-info strong { display:block; margin-top:5px; color:var(--text); font-size:10px; font-weight:600; }
+    .mini-trend { width:100%; height:120px; display:block; border:1px solid var(--line); border-radius:12px; background:#fbfcfe; }
+    .drawer-tabs { display:flex; gap:6px; margin:16px 0 12px; border-bottom:1px solid var(--line); }
+    .drawer-tabs button { padding:0 4px 9px; border:0; border-bottom:2px solid transparent; color:var(--muted); background:transparent; cursor:pointer; font-size:10px; }
+    .drawer-tabs button.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:700; }
+
+    .modal-layer { position:fixed; z-index:70; inset:0; display:grid; place-items:center; padding:20px; background:rgba(16,29,51,.34); opacity:0; visibility:hidden; transition:.2s ease; }
+    .modal-layer.show { opacity:1; visibility:visible; }
+    .modal { width:min(470px,95vw); padding:20px; border-radius:17px; background:#fff; box-shadow:0 24px 60px rgba(19,34,58,.2); transform:translateY(15px); transition:.22s ease; }
+    .modal-layer.show .modal { transform:translateY(0); }
+    .modal-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .modal-head h2 { margin:0; font-size:15px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:17px; }
+    .form-item label { display:block; margin-bottom:6px; color:var(--text); font-size:9px; }
+    .form-item input, .form-item select { width:100%; height:36px; padding:0 10px; border:1px solid var(--line); border-radius:9px; outline:none; color:var(--text); background:#fff; font-size:10px; }
+    .form-item.full { grid-column:1/-1; }
+    .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:19px; padding-top:15px; border-top:1px solid var(--line); }
+
+    .popover { position:fixed; z-index:60; top:60px; right:112px; width:330px; padding:13px; border:1px solid var(--line); border-radius:14px; background:#fff; box-shadow:0 18px 45px rgba(24,45,79,.16); opacity:0; visibility:hidden; transform:translateY(-8px); transition:.18s ease; }
+    .popover.show { opacity:1; visibility:visible; transform:translateY(0); }
+    .popover-head { display:flex; align-items:center; justify-content:space-between; padding:2px 2px 10px; }
+    .popover-head strong { font-size:12px; }
+
+    .toast { position:fixed; z-index:100; left:50%; top:24px; transform:translate(-50%,-12px); padding:10px 15px; border-radius:10px; color:#fff; background:rgba(20,33,55,.92); box-shadow:0 12px 30px rgba(14,25,44,.2); font-size:10px; opacity:0; visibility:hidden; transition:.22s ease; }
+    .toast.show { opacity:1; visibility:visible; transform:translate(-50%,0); }
+    .spin { animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    @media (max-width: 1160px) {
+      :root { --sidebar: 76px; }
+      .brand-copy, .nav-label, .admin-copy, .sidebar-foot svg { display:none; }
+      .nav-section { opacity:0; height:4px; margin:2px 0; }
+      .nav-badge { position:absolute; right:6px; top:5px; min-width:7px; width:7px; height:7px; padding:0; font-size:0; }
+      .stats-grid { grid-template-columns:repeat(2,1fr); }
+      .store-grid { grid-template-columns:repeat(2,1fr); }
+      .source-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width: 900px) {
+      .dashboard-grid, .bottom-grid, .two-col, .report-layout { grid-template-columns:1fr; }
+      .report-list { max-height:360px; }
+      .source-grid { grid-template-columns:1fr; }
+      .data-flow { grid-template-columns:1fr; }
+      .flow-arrow { width:1px; height:34px; margin:auto; }
+      .flow-arrow::after { right:-4px; top:auto; bottom:-1px; border-top:6px solid #91a5c3; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:0; }
+      .top-admin > div:last-child, .system-status { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark" id="brandMark"></div><div class="brand-copy"><strong>泰瑞医疗</strong><span>智慧医疗云平台</span></div></div>
+      <div class="nav-scroll"><div class="nav-section">运营总览</div><nav class="nav-list" id="mainNav"></nav><div class="nav-section">系统服务</div><nav class="nav-list" id="systemNav"></nav></div>
+      <div class="sidebar-foot"><div class="admin-mini"><div class="admin-avatar">管</div><div class="admin-copy"><strong>总部管理员</strong><span>超级管理员</span></div><span id="sideChevron"></span></div></div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar">
+        <button class="collapse-btn" data-action="collapse" aria-label="折叠菜单" id="collapseIcon"></button>
+        <div class="top-search"><span id="topSearchIcon"></span><input type="search" placeholder="搜索用户、设备编号、订单或门店" data-action="global-search"></div>
+        <div class="top-space"></div>
+        <span class="system-status"><i></i>系统运行正常</span>
+        <div class="notify-wrap"><button class="icon-btn" data-action="notifications" aria-label="消息通知" id="notifyIcon"></button><i class="notify-dot"></i></div>
+        <div class="top-admin"><div class="admin-avatar">管</div><div><strong>总部管理员</strong><span>2026年8月19日</span></div></div>
+      </header>
+      <main class="content" id="content" aria-live="polite"></main>
+    </div>
+  </div>
+
+  <div class="drawer-layer" id="drawerLayer"><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle"><div class="drawer-head"><h2 id="drawerTitle">详情</h2><button class="icon-btn" data-action="close-drawer" aria-label="关闭" id="drawerClose"></button></div><div class="drawer-body" id="drawerBody"></div></aside></div>
+  <div class="modal-layer" id="modalLayer"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><h2 id="modalTitle">新增设备</h2><button class="icon-btn" data-action="close-modal" aria-label="关闭" id="modalClose"></button></div><div id="modalBody"></div></section></div>
+  <div class="popover" id="notifyPopover"><div class="popover-head"><strong>消息通知</strong><button class="btn ghost small" data-action="read-all">全部已读</button></div><div class="alert-list"><div class="alert-item"><span class="alert-icon" style="color:var(--red);background:var(--red-soft)" id="popWarn1"></span><div class="alert-copy"><strong>设备离线告警</strong><span>滨江店氧舱 TR-T3-01442 离线超过30分钟</span></div><span class="alert-time">5分钟前</span></div><div class="alert-item"><span class="alert-icon" style="color:var(--orange);background:var(--orange-soft)" id="popWarn2"></span><div class="alert-copy"><strong>数据同步异常</strong><span>原门店系统有12条记录等待重试</span></div><span class="alert-time">18分钟前</span></div></div></div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const paths = {
+      logo:'<path d="M12 3c3.7 0 6.7 3 6.7 6.7 0 4.8-4.4 8.2-6.7 10.3-2.3-2.1-6.7-5.5-6.7-10.3C5.3 6 8.3 3 12 3Z"/><path d="M8.5 11.2h2.2V9h2.6v2.2h2.2v2.6h-2.2V16h-2.6v-2.2H8.5z"/>',
+      dashboard:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+      device:'<rect x="6" y="2" width="12" height="20" rx="4"/><path d="M9 6h6M9 18h6"/>',
+      users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+      oxygen:'<path d="M12 22c4.4 0 8-3.6 8-8 0-5.8-8-12-8-12S4 8.2 4 14c0 4.4 3.6 8 8 8Z"/><path d="M8.5 14.5c.8 2.1 2.2 3.2 4.5 3.4"/>',
+      store:'<path d="M3 9 5 3h14l2 6"/><path d="M5 13v8h14v-8M9 21v-6h6v6"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/>',
+      report:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+      database:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v7c0 1.7 4 3 9 3s9-1.3 9-3V5M3 12v7c0 1.7 4 3 9 3s9-1.3 9-3v-7"/>',
+      chart:'<path d="M3 3v18h18"/><path d="m7 16 4-5 4 3 5-7"/>',
+      settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
+      bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
+      search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.4-4.4"/>',
+      menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+      chevron:'<path d="m9 18 6-6-6-6"/>',
+      close:'<path d="M18 6 6 18M6 6l12 12"/>',
+      plus:'<path d="M12 5v14M5 12h14"/>',
+      export:'<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 14v6h14v-6"/>',
+      filter:'<path d="M4 5h16M7 12h10M10 19h4"/>',
+      sync:'<path d="M20 11a8.1 8.1 0 0 0-15.5-3M4 4v4h4M4 13a8.1 8.1 0 0 0 15.5 3M20 20v-4h-4"/>',
+      alert:'<path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/>',
+      user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+      heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
+      order:'<path d="M6 2h12l2 4H4l2-4Z"/><path d="M5 6v15h14V6M9 10h6"/>',
+      link:'<path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/>',
+      shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',
+      eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+      wifi:'<path d="M5 12.6a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01M2 9a15 15 0 0 1 20 0"/>',
+      cloud:'<path d="M17.5 19H7a5 5 0 1 1 1-9.9A7 7 0 0 1 21 12a4 4 0 0 1-3.5 7Z"/>',
+      check:'<path d="m5 12 4 4L19 6"/>',
+      arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+      money:'<circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8M12 6v12"/>',
+      clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+    };
+    const icon=(name,size=18)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.dashboard}</svg>`;
+
+    const state={page:'dashboard',range:'30d',deviceType:'all',deviceStatus:'all',deviceSearch:'',userSearch:'',oxygenType:'all',selectedReport:0,drawerTab:'overview',toastTimer:null,syncing:null};
+    const mainNav=[
+      {id:'dashboard',label:'数据驾驶舱',icon:'dashboard'},
+      {id:'devices',label:'设备管理',icon:'device',badge:'3'},
+      {id:'users',label:'用户管理',icon:'users'},
+      {id:'oxygen',label:'氧疗服务',icon:'oxygen'},
+      {id:'stores',label:'门店管理',icon:'store'},
+      {id:'reports',label:'多模态检测',icon:'report'},
+      {id:'integration',label:'数据接入中心',icon:'database'}
+    ];
+    const systemNav=[{id:'analytics',label:'数据分析中心',icon:'chart'},{id:'settings',label:'系统管理',icon:'settings'}];
+
+    const devices=[
+      {id:'TR-T3-02861',name:'泰瑞智能氧舱 T3',type:'氧舱',owner:'个人已售',ownerName:'林婉清',status:'online',run:'空闲',last:'1分钟前',used:'126.5小时',city:'杭州'},
+      {id:'TR-T3-01982',name:'泰瑞智能氧舱 T3',type:'氧舱',owner:'门店投放',ownerName:'滨江店',status:'online',run:'运行中',last:'刚刚',used:'684.2小时',city:'杭州'},
+      {id:'TR-S2-93218',name:'泰瑞健康手环 S2',type:'手环',owner:'个人已售',ownerName:'林婉清',status:'online',run:'采集中',last:'刚刚',used:'已激活 92天',city:'杭州'},
+      {id:'TR-T3-01442',name:'泰瑞智能氧舱 T3',type:'氧舱',owner:'门店投放',ownerName:'滨江店',status:'offline',run:'离线',last:'36分钟前',used:'512.8小时',city:'杭州'},
+      {id:'TR-S2-88731',name:'泰瑞健康手环 S2',type:'手环',owner:'个人已售',ownerName:'周建国',status:'online',run:'已同步',last:'3分钟前',used:'已激活 46天',city:'宁波'},
+      {id:'TR-MD-00318',name:'多模态检测一体机 M1',type:'检测设备',owner:'门店投放',ownerName:'城西店',status:'online',run:'待机',last:'2分钟前',used:'检测 1,024次',city:'杭州'},
+      {id:'TR-T3-01106',name:'泰瑞智能氧舱 T3',type:'氧舱',owner:'门店投放',ownerName:'宁波中心店',status:'warning',run:'维护中',last:'12分钟前',used:'731.6小时',city:'宁波'}
+    ];
+    const users=[
+      {id:'U2026083201',name:'林婉清',phone:'138****6628',member:'黄金会员',device:'2台',oxygen:'36次',health:'良好',spent:'¥18,692',active:'今天 09:38'},
+      {id:'U2026071846',name:'周建国',phone:'139****1270',member:'铂金会员',device:'1台',oxygen:'28次',health:'需关注',spent:'¥26,450',active:'今天 08:56'},
+      {id:'U2026052098',name:'陈雅琴',phone:'137****8431',member:'普通会员',device:'1台',oxygen:'12次',health:'良好',spent:'¥6,380',active:'昨天 21:17'},
+      {id:'U2026041132',name:'徐志明',phone:'186****2294',member:'黄金会员',device:'2台',oxygen:'41次',health:'良好',spent:'¥32,710',active:'昨天 18:42'},
+      {id:'U2026030755',name:'王秀兰',phone:'158****9052',member:'铂金会员',device:'1台',oxygen:'54次',health:'需关注',spent:'¥21,886',active:'8月17日'},
+      {id:'U2026010223',name:'郑海峰',phone:'135****7721',member:'普通会员',device:'1台',oxygen:'8次',health:'良好',spent:'¥4,960',active:'8月16日'}
+    ];
+    const oxygenRecords=[
+      {id:'OT202608190086',user:'林婉清',type:'家庭氧疗',place:'个人氧舱 TR-T3-02861',mode:'舒缓模式',duration:'45分钟',before:'95%',after:'98%',time:'今天 09:02',status:'done'},
+      {id:'OT202608190081',user:'周建国',type:'门店氧疗',place:'滨江店 · TR-T3-01982',mode:'活力模式',duration:'60分钟',before:'94%',after:'98%',time:'今天 08:35',status:'done'},
+      {id:'OT202608190077',user:'徐志明',type:'家庭氧疗',place:'个人氧舱 TR-T3-02017',mode:'睡眠模式',duration:'45分钟',before:'96%',after:'98%',time:'今天 07:58',status:'done'},
+      {id:'OT202608190069',user:'陈雅琴',type:'门店氧疗',place:'城西店 · TR-T3-00827',mode:'舒缓模式',duration:'45分钟',before:'95%',after:'97%',time:'今天 07:21',status:'done'},
+      {id:'OT202608190054',user:'王秀兰',type:'门店氧疗',place:'宁波中心店 · TR-T3-01107',mode:'综合模式',duration:'60分钟',before:'93%',after:'97%',time:'昨天 20:42',status:'done'}
+    ];
+    const reports=[
+      {name:'林婉清',id:'R20260819032',date:'今天 09:46',score:82,result:'整体状态良好',store:'滨江店',change:'+4'},
+      {name:'周建国',id:'R20260819028',date:'今天 09:18',score:76,result:'部分指标需关注',store:'滨江店',change:'+1'},
+      {name:'徐志明',id:'R20260818096',date:'昨天 17:35',score:88,result:'整体状态优秀',store:'城西店',change:'+6'},
+      {name:'王秀兰',id:'R20260818082',date:'昨天 15:10',score:71,result:'建议持续跟踪',store:'宁波中心店',change:'-2'},
+      {name:'陈雅琴',id:'R20260818061',date:'昨天 11:24',score:84,result:'整体状态良好',store:'城西店',change:'+3'}
+    ];
+
+    function pageHead(title,desc,actions=''){return `<div class="page-head"><div class="page-title"><h1>${title}</h1><p>${desc}</p></div><div class="page-actions">${actions}</div></div>`;}
+    function statCard(color,label,value,unit,delta,iconName){return `<div class="stat-card card ${color}"><div class="stat-top"><span class="stat-label">${label}</span><span class="stat-icon">${icon(iconName)}</span></div><div class="stat-value"><strong>${value}</strong><span>${unit}</span></div><div class="stat-foot"><span class="${delta.startsWith('+')?'delta-up':delta.startsWith('-')?'delta-down':''}">${delta}</span><span>较上一周期</span></div></div>`;}
+
+    const dashSeries={
+      '7d':{labels:['8/13','8/14','8/15','8/16','8/17','8/18','8/19'],a:[162,188,174,221,236,248,263],b:[72,81,76,96,104,112,121]},
+      '30d':{labels:['7/21','7/26','7/31','8/5','8/10','8/15','8/19'],a:[598,720,684,842,956,1054,1186],b:[244,301,286,356,408,452,516]},
+      '90d':{labels:['5/20','6/3','6/17','7/1','7/15','8/1','8/19'],a:[1280,1542,1798,2130,2498,2864,3245],b:[512,624,718,876,1028,1189,1368]}
+    };
+    function lineChart(){
+      const d=dashSeries[state.range],w=760,h=245,p={l:38,r:14,t:14,b:30};
+      const max=Math.max(...d.a)*1.12;
+      const points=arr=>arr.map((v,i)=>[p.l+i*(w-p.l-p.r)/(arr.length-1),p.t+(max-v)*(h-p.t-p.b)/max]);
+      const pa=points(d.a),pb=points(d.b),path=pts=>pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');
+      const area=`${path(pa)} L${pa[pa.length-1][0]},${h-p.b} L${pa[0][0]},${h-p.b} Z`;
+      return `<svg class="trend-chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="氧疗服务趋势"><defs><linearGradient id="dashArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2871f2" stop-opacity=".2"/><stop offset="1" stop-color="#2871f2" stop-opacity="0"/></linearGradient></defs>${[0,.25,.5,.75,1].map((v,i)=>{const y=p.t+i*(h-p.t-p.b)/4;return `<line class="grid" x1="${p.l}" x2="${w-p.r}" y1="${y}" y2="${y}"/><text x="${p.l-8}" y="${y+3}" text-anchor="end">${Math.round(max*(1-i/4))}</text>`}).join('')}<path class="area" d="${area}"/><path class="line" d="${path(pa)}"/><path class="line2" d="${path(pb)}"/>${pa.map((q,i)=>`<circle class="dot" cx="${q[0]}" cy="${q[1]}" r="3"/><text x="${q[0]}" y="${h-8}" text-anchor="middle">${d.labels[i]}</text>`).join('')}</svg>`;
+    }
+
+    function dashboardPage(){
+      const multipliers={"7d":[1286,642,96.8,28.6],"30d":[8426,3186,96.2,128.5],"90d":[18864,8924,94.9,386.2]}[state.range];
+      const actions=`<div class="range-switch">${[['7d','近7天'],['30d','近30天'],['90d','近90天']].map(x=>`<button class="${state.range===x[0]?'active':''}" data-action="range" data-range="${x[0]}">${x[1]}</button>`).join('')}</div><button class="btn" data-action="export">${icon('export')}导出报表</button>`;
+      return `${pageHead('数据驾驶舱','汇总设备、用户、氧疗、门店及健康数据，辅助总部经营决策。',actions)}
+      <div class="stats-grid">${statCard('blue','平台注册用户',multipliers[0].toLocaleString(),'人','+12.6%','users')}${statCard('cyan','设备在线率',multipliers[2],'%','+1.8%','wifi')}${statCard('purple','氧疗服务人次',multipliers[1].toLocaleString(),'次','+18.2%','oxygen')}${statCard('orange','综合业务收入',multipliers[3],'万元','+9.7%','money')}</div>
+      <div class="dashboard-grid"><section class="panel card"><div class="panel-head"><div><h2>氧疗服务趋势</h2><p>家庭氧疗与门店氧疗服务量变化</p></div><div class="legend"><span><i style="background:var(--primary)"></i>总服务人次</span><span><i style="background:var(--cyan)"></i>门店服务人次</span></div></div>${lineChart()}</section><section class="panel card"><div class="panel-head"><div><h2>设备在线概况</h2><p>当前已激活设备状态</p></div><button class="btn ghost small" data-action="go" data-page="devices">查看设备</button></div><div class="donut-wrap"><div class="donut"><div class="donut-copy"><strong>96.2%</strong><span>综合在线率</span></div></div></div><div class="device-legend"><div><span><i style="background:var(--primary)"></i>氧舱</span><strong>268 / 278</strong></div><div><span><i style="background:var(--cyan)"></i>手环</span><strong>1,842 / 1,906</strong></div><div><span><i style="background:#e6ebf3"></i>离线设备</span><strong>74 台</strong></div><div><span><i style="background:var(--orange)"></i>异常设备</span><strong>3 台</strong></div></div></section></div>
+      <div class="bottom-grid"><section class="page-card card"><div class="table-head"><h2>门店经营排行</h2><span>数据同步自原门店系统</span></div><div class="table-wrap"><table><thead><tr><th>排名</th><th>门店</th><th>服务人次</th><th>设备使用率</th><th>本月收入</th><th>趋势</th></tr></thead><tbody>${[['1','滨江店','1,286','86%','¥128,600','+18.6%'],['2','城西店','1,042','78%','¥103,450','+12.8%'],['3','宁波中心店','896','74%','¥89,720','+9.4%'],['4','萧山体验店','688','69%','¥67,280','+6.2%']].map((r,i)=>`<tr class="clickable" data-action="store-detail" data-store="${r[1]}"><td><span class="rank ${i<3?'top':''}">${r[0]}</span></td><td><div class="cell-main"><span class="cell-avatar">${r[1].slice(0,1)}</span><div class="cell-copy"><strong>${r[1]}</strong><span>浙江区域</span></div></div></td><td>${r[2]}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress"><i style="width:${r[3]}"></i></div>${r[3]}</div></td><td>${r[4]}</td><td class="delta-up">${r[5]}</td></tr>`).join('')}</tbody></table></div></section><section class="panel card"><div class="panel-head"><div><h2>待处理事项</h2><p>设备与数据异常提醒</p></div><span class="status warning">4 项</span></div><div class="alert-list"><div class="alert-item" data-action="go" data-page="devices"><span class="alert-icon" style="color:var(--red);background:var(--red-soft)">${icon('alert')}</span><div class="alert-copy"><strong>氧舱设备离线</strong><span>TR-T3-01442 已离线36分钟</span></div><span class="alert-time">5分钟前</span></div><div class="alert-item" data-action="go" data-page="integration"><span class="alert-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('sync')}</span><div class="alert-copy"><strong>门店数据同步异常</strong><span>12条服务记录等待重新同步</span></div><span class="alert-time">18分钟前</span></div><div class="alert-item" data-action="go" data-page="reports"><span class="alert-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('report')}</span><div class="alert-copy"><strong>检测报告待复核</strong><span>今日有3份异常指标报告</span></div><span class="alert-time">35分钟前</span></div></div></section></div>`;
+    }
+
+    function devicesPage(){
+      const filtered=devices.filter(d=>(state.deviceType==='all'||d.type===state.deviceType)&&(state.deviceStatus==='all'||d.status===state.deviceStatus)&&(!state.deviceSearch||(d.id+d.name+d.ownerName).toLowerCase().includes(state.deviceSearch.toLowerCase())));
+      const actions=`<button class="btn" data-action="export">${icon('export')}导出设备</button><button class="btn primary" data-action="add-device">${icon('plus')}设备登记录入</button>`;
+      return `${pageHead('设备管理','管理氧舱、手环及多模态检测设备的档案、归属、在线状态和使用记录。',actions)}<div class="stats-grid">${statCard('blue','设备总数','2,184','台','+8.4%','device')}${statCard('cyan','当前在线','2,101','台','+1.8%','wifi')}${statCard('purple','今日运行中','126','台','+16.2%','oxygen')}${statCard('orange','异常与维护','12','台','-2.1%','alert')}</div><div class="toolbar card"><div class="search-field">${icon('search')}<input class="field" id="deviceSearch" value="${state.deviceSearch}" placeholder="搜索设备编号、名称或归属" data-action="device-search"></div><select class="select" data-action="device-type"><option value="all">全部设备类型</option>${['氧舱','手环','检测设备'].map(x=>`<option value="${x}" ${state.deviceType===x?'selected':''}>${x}</option>`).join('')}</select><select class="select" data-action="device-status"><option value="all">全部设备状态</option><option value="online" ${state.deviceStatus==='online'?'selected':''}>在线</option><option value="offline" ${state.deviceStatus==='offline'?'selected':''}>离线</option><option value="warning" ${state.deviceStatus==='warning'?'selected':''}>维护中</option></select><div class="toolbar-spacer"></div><span class="result-count">共 ${filtered.length} 条示例数据</span></div><section class="page-card card"><div class="table-head"><h2>设备列表</h2><span>设备在线状态实时更新</span></div><div class="table-wrap"><table><thead><tr><th>设备信息</th><th>类型</th><th>业务归属</th><th>当前归属</th><th>联网状态</th><th>运行状态</th><th>累计使用</th><th>最后通信</th><th>操作</th></tr></thead><tbody>${filtered.map(d=>`<tr class="clickable" data-action="device-detail" data-id="${d.id}"><td><div class="cell-main"><span class="cell-avatar">${d.type==='氧舱'?'舱':d.type==='手环'?'环':'检'}</span><div class="cell-copy"><strong>${d.name}</strong><span>${d.id}</span></div></div></td><td>${d.type}</td><td>${d.owner}</td><td>${d.ownerName}</td><td><span class="status ${d.status}">${d.status==='online'?'在线':d.status==='offline'?'离线':'维护中'}</span></td><td>${d.run==='运行中'?'<span class="status running">运行中</span>':d.run}</td><td>${d.used}</td><td>${d.last}</td><td><button class="btn ghost small" data-action="device-detail" data-id="${d.id}">${icon('eye')}详情</button></td></tr>`).join('')||'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">没有符合条件的设备</td></tr>'}</tbody></table></div><div class="pagination"><span>显示 1–${filtered.length} 条，共 ${filtered.length} 条</span><div class="page-buttons"><button>‹</button><button class="active">1</button><button>2</button><button>›</button></div></div></section>`;
+    }
+
+    function usersPage(){
+      const filtered=users.filter(u=>!state.userSearch||(u.name+u.phone+u.id).toLowerCase().includes(state.userSearch.toLowerCase()));
+      return `${pageHead('用户管理','汇总C端用户、会员、设备、健康、氧疗和消费数据，形成统一用户档案。',`<button class="btn" data-action="export">${icon('export')}导出用户</button>`)}<div class="stats-grid">${statCard('blue','平台注册用户','8,426','人','+12.6%','users')}${statCard('cyan','本月活跃用户','4,892','人','+16.4%','heart')}${statCard('purple','已绑定设备用户','2,084','人','+10.8%','device')}${statCard('orange','会员用户','5,316','人','+9.5%','shield')}</div><div class="toolbar card"><div class="search-field">${icon('search')}<input class="field" id="userSearch" value="${state.userSearch}" placeholder="搜索姓名、手机号或用户编号" data-action="user-search"></div><select class="select"><option>全部会员等级</option><option>普通会员</option><option>黄金会员</option><option>铂金会员</option></select><select class="select"><option>全部健康状态</option><option>状态良好</option><option>需关注</option></select><div class="toolbar-spacer"></div><span class="result-count">用户数据已脱敏展示</span></div><section class="page-card card"><div class="table-head"><h2>用户列表</h2><span>综合数据来源：小程序、设备、商城和门店系统</span></div><div class="table-wrap"><table><thead><tr><th>用户</th><th>会员等级</th><th>绑定设备</th><th>氧疗次数</th><th>健康状态</th><th>累计消费</th><th>最近活跃</th><th>操作</th></tr></thead><tbody>${filtered.map((u,i)=>`<tr class="clickable" data-action="user-detail" data-user="${u.id}"><td><div class="cell-main"><span class="cell-avatar" style="color:var(--purple);background:var(--purple-soft)">${u.name.slice(0,1)}</span><div class="cell-copy"><strong>${u.name}</strong><span>${u.phone} · ${u.id}</span></div></div></td><td>${u.member}</td><td>${u.device}</td><td>${u.oxygen}</td><td><span class="status ${u.health==='良好'?'online':'warning'}">${u.health}</span></td><td>${u.spent}</td><td>${u.active}</td><td><button class="btn ghost small" data-action="user-detail" data-user="${u.id}">${icon('eye')}用户档案</button></td></tr>`).join('')}</tbody></table></div><div class="pagination"><span>显示 1–${filtered.length} 条，共 8,426 条</span><div class="page-buttons"><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></div></section>`;
+    }
+
+    function oxygenPage(){
+      const filtered=oxygenRecords.filter(r=>state.oxygenType==='all'||(state.oxygenType==='home'?r.type==='家庭氧疗':r.type==='门店氧疗'));
+      return `${pageHead('氧疗服务','统一查看家庭与门店氧疗记录，关联氧舱运行数据和手环健康数据。',`<button class="btn" data-action="export">${icon('export')}导出记录</button>`)}<div class="stats-grid">${statCard('blue','今日氧疗人次','263','次','+18.2%','oxygen')}${statCard('cyan','家庭氧疗','142','次','+14.6%','device')}${statCard('purple','门店氧疗','121','次','+22.4%','store')}${statCard('orange','平均服务时长','48','分钟','+3.1%','clock')}</div><div class="two-col"><section class="panel card"><div class="panel-head"><div><h2>近期氧疗趋势</h2><p>家庭与门店服务量对比</p></div><div class="legend"><span><i style="background:var(--primary)"></i>家庭氧疗</span><span><i style="background:var(--cyan)"></i>门店氧疗</span></div></div>${lineChart()}</section><section class="panel card"><div class="panel-head"><div><h2>氧疗效果概览</h2><p>基于手环采集数据统计</p></div></div><div class="donut-wrap"><div class="donut" style="background:conic-gradient(var(--cyan) 0 88%,#e6ebf3 88%)"><div class="donut-copy"><strong>88%</strong><span>有效数据覆盖率</span></div></div></div><div class="device-legend"><div><span>平均血氧提升</span><strong class="delta-up">+2.6%</strong></div><div><span>平均心率变化</span><strong>-4 bpm</strong></div><div><span>健康数据完整</span><strong>232 次</strong></div><div><span>数据缺失</span><strong>31 次</strong></div></div></section></div><div class="toolbar card" style="margin-top:14px"><div class="range-switch">${[['all','全部记录'],['home','家庭氧疗'],['store','门店氧疗']].map(x=>`<button class="${state.oxygenType===x[0]?'active':''}" data-action="oxygen-filter" data-type="${x[0]}">${x[1]}</button>`).join('')}</div><div class="toolbar-spacer"></div><span class="result-count">共 ${filtered.length} 条示例记录</span></div><section class="page-card card"><div class="table-head"><h2>氧疗记录</h2><span>门店数据同步自原门店系统</span></div><div class="table-wrap"><table><thead><tr><th>记录编号</th><th>用户</th><th>类型</th><th>设备与地点</th><th>模式</th><th>时长</th><th>血氧变化</th><th>时间</th><th>操作</th></tr></thead><tbody>${filtered.map(r=>`<tr class="clickable" data-action="oxygen-detail" data-record="${r.id}"><td>${r.id}</td><td><div class="cell-main"><span class="cell-avatar">${r.user.slice(0,1)}</span><div class="cell-copy"><strong>${r.user}</strong><span>健康数据已关联</span></div></div></td><td><span class="status ${r.type==='家庭氧疗'?'running':'online'}">${r.type}</span></td><td>${r.place}</td><td>${r.mode}</td><td>${r.duration}</td><td><span>${r.before}</span> → <strong class="delta-up">${r.after}</strong></td><td>${r.time}</td><td><button class="btn ghost small" data-action="oxygen-detail" data-record="${r.id}">${icon('eye')}查看分析</button></td></tr>`).join('')}</tbody></table></div></section>`;
+    }
+
+    function storesPage(){
+      const storeData=[['滨江店','浙江省杭州市滨江区','1,286','86%','¥128,600','blue'],['城西店','浙江省杭州市西湖区','1,042','78%','¥103,450','purple'],['宁波中心店','浙江省宁波市鄞州区','896','74%','¥89,720','orange'],['萧山体验店','浙江省杭州市萧山区','688','69%','¥67,280','blue'],['绍兴体验店','浙江省绍兴市越城区','526','64%','¥51,840','purple'],['嘉兴体验店','浙江省嘉兴市南湖区','482','61%','¥46,910','orange']];
+      return `${pageHead('门店管理','查看各门店档案、投放设备、订单、服务量及经营数据；业务操作由原门店系统完成。',`<button class="btn" data-action="sync-one" data-source="门店数据">${icon('sync')}同步门店数据</button><button class="btn" data-action="export">${icon('export')}导出经营报表</button>`)}<div class="stats-grid">${statCard('blue','接入门店','26','家','+2 家','store')}${statCard('cyan','今日服务人次','121','次','+22.4%','oxygen')}${statCard('purple','门店投放设备','86','台','+6.3%','device')}${statCard('orange','本月门店收入','68.4','万元','+11.8%','money')}</div><div class="store-grid">${storeData.map(s=>`<article class="store-card card" data-action="store-detail" data-store="${s[0]}"><div class="store-cover ${s[5]}"><strong>${s[0]}</strong></div><div class="store-body"><div class="store-line"><span>${s[1]}</span><span class="status online">营业中</span></div><div class="store-kpis"><div><strong>${s[2]}</strong><span>本月服务</span></div><div><strong>${s[3]}</strong><span>设备使用率</span></div><div><strong>${s[4]}</strong><span>本月收入</span></div></div></div></article>`).join('')}</div>`;
+    }
+
+    function reportsPage(){
+      const r=reports[state.selectedReport];
+      return `${pageHead('多模态检测','汇总用户检测记录、检测报告、异常指标及氧疗前后对比分析。',`<button class="btn" data-action="export">${icon('export')}导出报告</button>`)}<div class="stats-grid">${statCard('blue','累计检测报告','12,846','份','+16.3%','report')}${statCard('cyan','今日完成检测','96','份','+21.5%','check')}${statCard('purple','氧疗前后对比','3,284','组','+18.7%','chart')}${statCard('orange','异常指标报告','18','份','-3.2%','alert')}</div><div class="report-layout"><section class="report-list card"><div class="report-filter"><div class="search-field" style="width:100%">${icon('search')}<input class="field" placeholder="搜索用户或报告编号"></div></div><div class="report-items">${reports.map((x,i)=>`<div class="report-item ${state.selectedReport===i?'active':''}" data-action="select-report" data-index="${i}"><div class="report-score">${x.score}</div><div class="report-item-copy"><strong>${x.name} · ${x.result}</strong><span>${x.id} · ${x.date}</span></div><span class="${x.change.startsWith('+')?'delta-up':'delta-down'}">${x.change}</span>${icon('chevron',14)}</div>`).join('')}</div></section><section class="report-preview card"><div class="panel-head"><div><h2>检测报告预览</h2><p>${r.id} · 数据来源：${r.store}多模态检测设备</p></div><button class="btn small" data-action="report-detail">${icon('eye')}完整报告</button></div><div class="report-user"><span class="cell-avatar">${r.name.slice(0,1)}</span><div><strong>${r.name}</strong><span>本次检测：${r.date} · 较上次 ${r.change} 分</span></div><span class="status online" style="margin-left:auto">报告已生成</span></div><div class="report-summary"><div class="radar"><i class="radar-ring"></i><i class="radar-ring"></i><i class="radar-ring"></i><i class="radar-shape"></i></div><div class="report-score-big"><span>综合健康评估</span><strong>${r.score} 分</strong><p>${r.result}。本次共分析24项健康指标，心肺功能和血氧水平表现较好，建议持续观察睡眠与压力状态。</p></div></div><div class="indicator-grid">${[['心肺功能','86%'],['睡眠状态','74%'],['压力状态','78%'],['身体机能','82%']].map(x=>`<div class="indicator"><div class="indicator-head"><span>${x[0]}</span><strong>${x[1]}</strong></div><div class="progress"><i style="width:${x[1]}"></i></div></div>`).join('')}</div></section></div>`;
+    }
+
+    const sources=[
+      {id:'mall',name:'原商城小程序',desc:'用户、会员、商品及商城订单',icon:'store',count:'38,426',time:'1分钟前',status:'online'},
+      {id:'store',name:'原门店系统',desc:'门店、预约、核销及服务数据',icon:'database',count:'126,842',time:'3分钟前',status:'warning'},
+      {id:'oxygen',name:'氧舱物联网数据',desc:'在线状态、运行参数及使用记录',icon:'oxygen',count:'8,624,912',time:'刚刚',status:'online'},
+      {id:'bracelet',name:'手环健康数据',desc:'血氧、心率、睡眠等用户指标',icon:'heart',count:'36,218,504',time:'刚刚',status:'online'},
+      {id:'multi',name:'多模态检测设备',desc:'原始检测数据与分析报告',icon:'report',count:'248,106',time:'2分钟前',status:'online'}
+    ];
+    function integrationPage(){
+      return `${pageHead('数据接入中心','统一管理原业务系统、智能设备与检测设备的数据同步、异常和对账。',`<button class="btn primary" data-action="sync-all">${icon('sync')}全部立即同步</button>`)}<div class="source-grid">${sources.map(s=>`<article class="source-card card"><div class="source-top"><span class="source-logo">${icon(s.icon)}</span><div class="source-copy"><strong>${s.name}</strong><span>${s.desc}</span></div><span class="status ${(state.syncing==='all'||state.syncing===s.id)?'syncing':s.status}">${(state.syncing==='all'||state.syncing===s.id)?'同步中':s.status==='online'?'运行正常':'部分异常'}</span></div><div class="source-meta"><div><span>累计接入数据</span><strong>${s.count} 条</strong></div><div><span>最近同步</span><strong>${(state.syncing==='all'||state.syncing===s.id)?'正在同步…':s.time}</strong></div></div><div class="source-actions"><span style="color:var(--muted);font-size:8px">增量同步 · 自动重试</span><button class="btn ghost small" data-action="sync-source" data-source="${s.id}">${icon('sync')}立即同步</button></div></article>`).join('')}</div><div class="two-col"><section class="flow-card card"><div class="panel-head"><div><h2>泰瑞数据汇聚关系</h2><p>原业务系统与智能设备数据统一进入泰瑞医疗云平台</p></div></div><div class="data-flow"><div class="flow-group"><div class="flow-node">${icon('store')}原商城小程序</div><div class="flow-node">${icon('database')}原门店系统</div></div><i class="flow-arrow"></i><div class="flow-center">${icon('cloud')}<strong>泰瑞医疗云平台</strong><span>用户统一 · 数据汇总 · 综合分析</span></div><i class="flow-arrow"></i><div class="flow-group"><div class="flow-node">${icon('device')}C端小程序展示</div><div class="flow-node">${icon('chart')}经营数据分析</div></div></div></section><section class="page-card card"><div class="table-head"><h2>最近同步任务</h2><span>实时更新</span></div><div class="table-wrap"><table><thead><tr><th>数据源</th><th>结果</th><th>处理量</th><th>耗时</th></tr></thead><tbody><tr><td>氧舱物联网</td><td><span class="status done">成功</span></td><td>1,286条</td><td>4.2秒</td></tr><tr><td>手环健康数据</td><td><span class="status done">成功</span></td><td>8,624条</td><td>12.8秒</td></tr><tr><td>原门店系统</td><td><span class="status warning">部分失败</span></td><td>618 / 630条</td><td>9.6秒</td></tr><tr><td>原商城小程序</td><td><span class="status done">成功</span></td><td>326条</td><td>3.1秒</td></tr></tbody></table></div></section></div>`;
+    }
+
+    function placeholderPage(type){return `${pageHead(type==='analytics'?'数据分析中心':'系统管理',type==='analytics'?'面向总部运营的专题分析与报表中心。':'管理总部账号、角色权限、系统参数、消息和审计日志。')}<section class="panel card"><div class="panel-head"><div><h2>${type==='analytics'?'专题分析':'基础配置'}</h2><p>本次原型聚焦主要业务页面，该模块展示为结构占位。</p></div></div><div class="stats-grid" style="margin:20px 0 0">${type==='analytics'?statCard('blue','用户分析','12','个专题','+2','users')+statCard('cyan','设备分析','8','个专题','+1','device')+statCard('purple','氧疗分析','10','个专题','+3','oxygen')+statCard('orange','经营报表','26','张','+4','chart'):statCard('blue','总部账号','18','个','+1','user')+statCard('cyan','角色权限','6','组','0','shield')+statCard('purple','操作日志','12,684','条','+8.6%','report')+statCard('orange','安全告警','0','项','0','alert')}</div></section>`;}
+
+    const renderers={dashboard:dashboardPage,devices:devicesPage,users:usersPage,oxygen:oxygenPage,stores:storesPage,reports:reportsPage,integration:integrationPage,analytics:()=>placeholderPage('analytics'),settings:()=>placeholderPage('settings')};
+    function renderNav(){document.getElementById('mainNav').innerHTML=mainNav.map(n=>`<button class="nav-item ${state.page===n.id?'active':''}" data-action="go" data-page="${n.id}"><span class="nav-icon">${icon(n.icon)}</span><span class="nav-label">${n.label}</span>${n.badge?`<span class="nav-badge">${n.badge}</span>`:''}</button>`).join('');document.getElementById('systemNav').innerHTML=systemNav.map(n=>`<button class="nav-item ${state.page===n.id?'active':''}" data-action="go" data-page="${n.id}"><span class="nav-icon">${icon(n.icon)}</span><span class="nav-label">${n.label}</span></button>`).join('');}
+    function render(){renderNav();document.getElementById('content').innerHTML=renderers[state.page]();}
+    function navigate(page){if(!renderers[page])return;state.page=page;render();document.querySelector('.content').scrollTop=0;window.scrollTo({top:0,behavior:'smooth'});}
+    function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>el.classList.remove('show'),1800);}
+    function openDrawer(title,html){document.getElementById('drawerTitle').textContent=title;document.getElementById('drawerBody').innerHTML=html;document.getElementById('drawerLayer').classList.add('show');}
+    function closeDrawer(){document.getElementById('drawerLayer').classList.remove('show');}
+    function openModal(title,html){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;document.getElementById('modalLayer').classList.add('show');}
+    function closeModal(){document.getElementById('modalLayer').classList.remove('show');}
+
+    function deviceDetail(id){const d=devices.find(x=>x.id===id)||devices[0];openDrawer('设备详情',`<div class="detail-hero"><div class="detail-hero-top"><div><strong>${d.name}</strong><p>${d.id} · ${d.type}</p></div><span class="status ${d.status}" style="background:rgba(255,255,255,.16);color:#fff">${d.status==='online'?'设备在线':d.status==='offline'?'设备离线':'维护中'}</span></div><div class="detail-kpis"><div><span>当前状态</span><strong>${d.run}</strong></div><div><span>累计使用</span><strong>${d.used}</strong></div><div><span>最后通信</span><strong>${d.last}</strong></div></div></div><div class="drawer-tabs"><button class="active">基础信息</button><button>运行数据</button><button>使用记录</button><button>告警维修</button></div><div class="detail-section"><h3>设备基础信息</h3><div class="detail-info"><div><span>业务归属</span><strong>${d.owner}</strong></div><div><span>当前归属</span><strong>${d.ownerName}</strong></div><div><span>所在城市</span><strong>${d.city}</strong></div><div><span>设备型号</span><strong>${d.type==='氧舱'?'T3 标准版':d.type==='手环'?'S2 标准版':'M1 一体机'}</strong></div><div><span>激活时间</span><strong>2026-05-18</strong></div><div><span>固件版本</span><strong>v2.6.3</strong></div></div></div><div class="detail-section"><h3>近7日运行趋势</h3><svg class="mini-trend" viewBox="0 0 480 120"><path d="M18 92 C65 80,78 88,116 63 S182 74,222 51 S289 66,332 37 S404 51,462 24" fill="none" stroke="#2871f2" stroke-width="3"/><path d="M18 92 C65 80,78 88,116 63 S182 74,222 51 S289 66,332 37 S404 51,462 24 L462 110 L18 110Z" fill="#2871f2" opacity=".08"/></svg></div><div class="modal-actions"><button class="btn" data-action="toast" data-message="设备运行日志已导出">${icon('export')}导出日志</button><button class="btn primary" data-action="toast" data-message="已进入远程监控">${icon('eye')}实时监控</button></div>`);}
+
+    function userDetail(id){const u=users.find(x=>x.id===id)||users[0];openDrawer('统一用户档案',`<div class="detail-hero" style="background:linear-gradient(135deg,#6258d6,#7f72e6 55%,#3c9bc5)"><div class="detail-hero-top"><div><strong>${u.name}</strong><p>${u.phone} · ${u.id}</p></div><span class="status online" style="background:rgba(255,255,255,.16);color:#fff">${u.member}</span></div><div class="detail-kpis"><div><span>绑定设备</span><strong>${u.device}</strong></div><div><span>氧疗次数</span><strong>${u.oxygen}</strong></div><div><span>累计消费</span><strong>${u.spent}</strong></div></div></div><div class="drawer-tabs"><button class="active">用户概览</button><button>健康数据</button><button>设备关系</button><button>消费记录</button></div><div class="detail-section"><h3>健康概览</h3><div class="detail-info"><div><span>综合健康指数</span><strong class="delta-up">86 · 状态良好</strong></div><div><span>最近血氧</span><strong>98%</strong></div><div><span>静息心率</span><strong>72 bpm</strong></div><div><span>最近检测报告</span><strong>82 分</strong></div></div></div><div class="detail-section"><h3>用户数据关系</h3><div class="alert-list"><div class="alert-item"><span class="alert-icon" style="color:var(--primary);background:var(--primary-soft)">${icon('device')}</span><div class="alert-copy"><strong>设备数据</strong><span>已关联个人氧舱、手环及36次设备使用记录</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--cyan);background:var(--cyan-soft)">${icon('oxygen')}</span><div class="alert-copy"><strong>氧疗与门店服务</strong><span>家庭氧疗28次，门店氧疗8次</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('order')}</span><div class="alert-copy"><strong>商城与会员数据</strong><span>${u.member} · 累计消费 ${u.spent}</span></div></div></div></div>`);}
+
+    function oxygenDetail(id){const r=oxygenRecords.find(x=>x.id===id)||oxygenRecords[0];openDrawer('氧疗记录详情',`<div class="detail-hero"><div class="detail-hero-top"><div><strong>${r.type} · ${r.mode}</strong><p>${r.id} · ${r.time}</p></div><span class="status done" style="background:rgba(255,255,255,.16);color:#fff">已完成</span></div><div class="detail-kpis"><div><span>使用时长</span><strong>${r.duration}</strong></div><div><span>氧疗前血氧</span><strong>${r.before}</strong></div><div><span>氧疗后血氧</span><strong>${r.after}</strong></div></div></div><div class="detail-section"><h3>关联信息</h3><div class="detail-info"><div><span>使用用户</span><strong>${r.user}</strong></div><div><span>设备与地点</span><strong>${r.place}</strong></div><div><span>氧舱数据</span><strong>完整</strong></div><div><span>手环健康数据</span><strong class="delta-up">完整</strong></div></div></div><div class="detail-section"><h3>本次健康数据趋势</h3><svg class="mini-trend" viewBox="0 0 480 120"><path d="M18 84 C70 85,97 75,138 72 S210 62,255 57 S340 43,385 38 S430 31,462 27" fill="none" stroke="#1eb6a5" stroke-width="3"/><path d="M18 84 C70 85,97 75,138 72 S210 62,255 57 S340 43,385 38 S430 31,462 27 L462 110 L18 110Z" fill="#1eb6a5" opacity=".1"/></svg></div><div class="detail-section"><h3>系统分析</h3><div class="alert-item" style="background:var(--green-soft)"><span class="alert-icon" style="color:var(--green);background:#fff">${icon('check')}</span><div class="alert-copy"><strong>本次氧疗数据表现良好</strong><span>血氧提升 ${parseInt(r.after)-parseInt(r.before)}%，氧疗过程中心率保持平稳，未出现异常设备告警。</span></div></div></div>`);}
+
+    function storeDetail(name){openDrawer('门店经营详情',`<div class="detail-hero" style="background:linear-gradient(135deg,#188f83,#25b6a5 55%,#368cdf)"><div class="detail-hero-top"><div><strong>泰瑞氧疗中心（${name}）</strong><p>数据同步自客户原门店系统</p></div><span class="status online" style="background:rgba(255,255,255,.16);color:#fff">营业中</span></div><div class="detail-kpis"><div><span>本月服务</span><strong>1,286 次</strong></div><div><span>设备使用率</span><strong>86%</strong></div><div><span>本月收入</span><strong>¥128,600</strong></div></div></div><div class="detail-section"><h3>门店档案</h3><div class="detail-info"><div><span>门店类型</span><strong>合作体验门店</strong></div><div><span>营业时间</span><strong>09:00–21:00</strong></div><div><span>投放氧舱</span><strong>8 台</strong></div><div><span>检测设备</span><strong>2 台</strong></div></div></div><div class="detail-section"><h3>近7日服务趋势</h3><svg class="mini-trend" viewBox="0 0 480 120"><path d="M18 88 C60 75,92 79,132 64 S205 70,246 49 S323 57,365 36 S423 44,462 28" fill="none" stroke="#2871f2" stroke-width="3"/><path d="M18 88 C60 75,92 79,132 64 S205 70,246 49 S323 57,365 36 S423 44,462 28 L462 110 L18 110Z" fill="#2871f2" opacity=".08"/></svg></div><div class="detail-section"><h3>设备概况</h3><div class="alert-list"><div class="alert-item"><span class="alert-icon" style="color:var(--green);background:var(--green-soft)">${icon('device')}</span><div class="alert-copy"><strong>7台设备在线</strong><span>当前2台运行中，5台空闲</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--red);background:var(--red-soft)">${icon('alert')}</span><div class="alert-copy"><strong>1台设备离线</strong><span>TR-T3-01442 已离线36分钟</span></div></div></div></div>`);}
+
+    function addDeviceModal(){openModal('设备登记录入',`<div class="form-grid"><div class="form-item"><label>设备类型</label><select><option>氧舱</option><option>手环</option><option>多模态检测设备</option></select></div><div class="form-item"><label>设备型号</label><select><option>泰瑞智能氧舱 T3</option><option>泰瑞健康手环 S2</option></select></div><div class="form-item"><label>设备序列号</label><input placeholder="请输入或扫描设备编号"></div><div class="form-item"><label>设备批次</label><input value="2026-08"></div><div class="form-item"><label>业务归属</label><select><option>暂未分配</option><option>个人已售</option><option>门店投放</option></select></div><div class="form-item"><label>登记仓库</label><select><option>总部设备仓</option></select></div><div class="form-item full"><label>备注</label><input placeholder="选填，填写设备登记说明"></div></div><div class="modal-actions"><button class="btn" data-action="close-modal">取消</button><button class="btn primary" data-action="save-device">确认登记</button></div>`);}
+
+    function doSync(id){if(state.syncing)return;state.syncing=id;render();setTimeout(()=>{state.syncing=null;render();toast('数据同步完成，未发现新增异常');},1100);}
+
+    document.addEventListener('click',e=>{
+      const t=e.target.closest('[data-action]');if(!t)return;const a=t.dataset.action;
+      if(a==='go')navigate(t.dataset.page);
+      if(a==='collapse')document.getElementById('appShell').classList.toggle('collapsed');
+      if(a==='range'){state.range=t.dataset.range;render();}
+      if(a==='export')toast('报表导出任务已创建');
+      if(a==='device-detail')deviceDetail(t.dataset.id);
+      if(a==='user-detail')userDetail(t.dataset.user);
+      if(a==='oxygen-detail')oxygenDetail(t.dataset.record);
+      if(a==='store-detail')storeDetail(t.dataset.store);
+      if(a==='close-drawer')closeDrawer();
+      if(a==='add-device')addDeviceModal();
+      if(a==='close-modal')closeModal();
+      if(a==='save-device'){closeModal();toast('设备登记成功');}
+      if(a==='notifications')document.getElementById('notifyPopover').classList.toggle('show');
+      if(a==='read-all'){document.querySelector('.notify-dot').style.display='none';document.getElementById('notifyPopover').classList.remove('show');toast('通知已全部标记为已读');}
+      if(a==='toast')toast(t.dataset.message||'操作成功');
+      if(a==='oxygen-filter'){state.oxygenType=t.dataset.type;render();}
+      if(a==='select-report'){state.selectedReport=Number(t.dataset.index);render();}
+      if(a==='report-detail')openDrawer('多模态完整检测报告',document.querySelector('.report-preview').innerHTML);
+      if(a==='sync-source')doSync(t.dataset.source);
+      if(a==='sync-all')doSync('all');
+      if(a==='sync-one')toast(`${t.dataset.source}同步任务已启动`);
+    });
+    document.addEventListener('change',e=>{
+      const t=e.target;
+      if(t.dataset.action==='device-type'){state.deviceType=t.value;render();}
+      if(t.dataset.action==='device-status'){state.deviceStatus=t.value;render();}
+    });
+    document.addEventListener('input',e=>{
+      const t=e.target;
+      if(t.dataset.action==='device-search'){
+        state.deviceSearch=t.value;
+        const key=t.value.trim().toLowerCase();
+        const rows=[...document.querySelectorAll('tbody tr.clickable')];
+        let visible=0;
+        rows.forEach(row=>{const show=!key||row.innerText.toLowerCase().includes(key);row.style.display=show?'':'none';if(show)visible++;});
+        const count=document.querySelector('.result-count');
+        if(count)count.textContent=`共 ${visible} 条示例数据`;
+      }
+      if(t.dataset.action==='user-search'){
+        state.userSearch=t.value;
+        const key=t.value.trim().toLowerCase();
+        document.querySelectorAll('tbody tr.clickable').forEach(row=>{row.style.display=!key||row.innerText.toLowerCase().includes(key)?'':'none';});
+      }
+      if(t.dataset.action==='global-search'&&t.value.length>1)toast('全局搜索将在正式系统中匹配用户、设备、订单和门店');
+    });
+    document.getElementById('drawerLayer').addEventListener('click',e=>{if(e.target.id==='drawerLayer')closeDrawer();});
+    document.getElementById('modalLayer').addEventListener('click',e=>{if(e.target.id==='modalLayer')closeModal();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();closeModal();document.getElementById('notifyPopover').classList.remove('show');}});
+
+    document.getElementById('brandMark').innerHTML=icon('logo');
+    document.getElementById('collapseIcon').innerHTML=icon('menu');
+    document.getElementById('topSearchIcon').innerHTML=icon('search');
+    document.getElementById('notifyIcon').innerHTML=icon('bell');
+    document.getElementById('sideChevron').innerHTML=icon('chevron',14);
+    document.getElementById('drawerClose').innerHTML=icon('close');
+    document.getElementById('modalClose').innerHTML=icon('close');
+    document.getElementById('popWarn1').innerHTML=icon('alert');
+    document.getElementById('popWarn2').innerHTML=icon('sync');
+    render();
+  </script>
+</body>
+</html>
