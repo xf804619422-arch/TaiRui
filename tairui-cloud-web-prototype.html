@@ -379,6 +379,47 @@
       .flow-arrow::after { right:-4px; top:auto; bottom:-1px; border-top:6px solid #91a5c3; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:0; }
       .top-admin > div:last-child, .system-status { display:none; }
     }
+    .lifestyle-overview { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr); gap:14px; margin-bottom:14px; }
+    .dimension-list { display:grid; gap:15px; margin-top:18px; }
+    .dimension-row { display:grid; grid-template-columns:36px 116px minmax(120px,1fr) 58px; gap:12px; align-items:center; }
+    .dimension-mark { width:36px; height:36px; display:grid; place-items:center; border-radius:11px; color:var(--primary); background:var(--primary-soft); }
+    .dimension-mark.diet { color:var(--orange); background:var(--orange-soft); }
+    .dimension-mark.exercise { color:var(--green); background:var(--green-soft); }
+    .dimension-mark.sleep { color:var(--purple); background:var(--purple-soft); }
+    .dimension-name strong { display:block; font-size:10px; }
+    .dimension-name span { display:block; margin-top:3px; color:var(--muted); font-size:8px; }
+    .dimension-track { height:8px; overflow:hidden; border-radius:20px; background:#eef2f7; }
+    .dimension-track i { display:block; height:100%; border-radius:inherit; background:var(--primary); }
+    .dimension-rate { font-size:12px; text-align:right; }
+    .source-summary { display:grid; grid-template-columns:150px 1fr; gap:16px; align-items:center; margin-top:10px; min-height:180px; }
+    .source-donut { width:142px; height:142px; position:relative; display:grid; place-items:center; border-radius:50%; background:conic-gradient(var(--primary) 0 68.4%,var(--cyan) 68.4% 100%); }
+    .source-donut::before { content:""; position:absolute; width:98px; height:98px; border-radius:50%; background:#fff; }
+    .source-donut div { position:relative; z-index:1; text-align:center; }
+    .source-donut strong { display:block; font-size:24px; }
+    .source-donut span { color:var(--muted); font-size:8px; }
+    .source-breakdown { display:grid; gap:13px; }
+    .source-breakdown div { display:flex; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+    .source-breakdown div:last-child { padding-bottom:0; border-bottom:0; }
+    .source-breakdown span { color:var(--muted); font-size:9px; }
+    .source-breakdown strong { font-size:10px; }
+    .life-cell { min-width:82px; }
+    .life-cell strong { display:block; font-size:9px; font-weight:700; }
+    .life-cell span { display:block; margin-top:3px; color:var(--muted); font-size:8px; }
+    .life-cell.missing strong { color:var(--muted); font-weight:500; }
+    .completion { min-width:72px; }
+    .completion strong { display:block; margin-bottom:5px; font-size:10px; }
+    .completion .progress { width:66px; }
+    .behavior-score { display:inline-flex; align-items:center; gap:6px; font-weight:700; }
+    .behavior-score i { width:7px; height:7px; border-radius:50%; background:var(--green); }
+    .behavior-score.attention i { background:var(--orange); }
+    @media(max-width:1050px) {
+      .lifestyle-overview { grid-template-columns:1fr; }
+    }
+    @media(max-width:720px) {
+      .dimension-row { grid-template-columns:36px 95px minmax(80px,1fr) 48px; }
+      .source-summary { grid-template-columns:1fr; justify-items:center; }
+      .source-breakdown { width:100%; }
+    }
   </style>
 </head>
 <body>
@@ -443,11 +484,12 @@
     };
     const icon=(name,size=18)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.dashboard}</svg>`;
 
-    const state={page:'dashboard',range:'30d',deviceType:'all',deviceStatus:'all',deviceSearch:'',userSearch:'',oxygenType:'all',selectedReport:0,drawerTab:'overview',toastTimer:null,syncing:null};
+    const state={page:'dashboard',range:'30d',deviceType:'all',deviceStatus:'all',deviceSearch:'',userSearch:'',oxygenType:'all',lifestyleDimension:'all',selectedReport:0,drawerTab:'overview',toastTimer:null,syncing:null};
     const mainNav=[
       {id:'dashboard',label:'数据驾驶舱',icon:'dashboard'},
       {id:'devices',label:'设备管理',icon:'device',badge:'3'},
       {id:'users',label:'用户管理',icon:'users'},
+      {id:'lifestyle',label:'客户行为及生活方式监管',icon:'heart'},
       {id:'oxygen',label:'氧疗服务',icon:'oxygen'},
       {id:'stores',label:'门店管理',icon:'store'},
       {id:'reports',label:'多模态检测',icon:'report'},
@@ -478,6 +520,13 @@
       {id:'OT202608190077',user:'徐志明',type:'家庭氧疗',place:'个人氧舱 TR-T3-02017',mode:'睡眠模式',duration:'45分钟',before:'96%',after:'98%',time:'今天 07:58',status:'done'},
       {id:'OT202608190069',user:'陈雅琴',type:'门店氧疗',place:'城西店 · TR-T3-00827',mode:'舒缓模式',duration:'45分钟',before:'95%',after:'97%',time:'今天 07:21',status:'done'},
       {id:'OT202608190054',user:'王秀兰',type:'门店氧疗',place:'宁波中心店 · TR-T3-01107',mode:'综合模式',duration:'60分钟',before:'93%',after:'97%',time:'昨天 20:42',status:'done'}
+    ];
+    const lifestyleRecords=[
+      {id:'U2026083201',user:'林婉宁',phone:'138****6628',oxygen:{done:true,source:'设备同步',value:'45分钟'},diet:{done:true,source:'手动填写',value:'三餐规律'},exercise:{done:true,source:'手环同步',value:'6,820步'},sleep:{done:true,source:'手环同步',value:'7时32分'},score:92,updated:'今天 09:41',attention:false},
+      {id:'U2026071846',user:'周建国',phone:'139****1270',oxygen:{done:true,source:'设备同步',value:'60分钟'},diet:{done:false,source:'未填写',value:'--'},exercise:{done:true,source:'手环同步',value:'4,216步'},sleep:{done:true,source:'手环同步',value:'6时18分'},score:76,updated:'今天 09:16',attention:true},
+      {id:'U2026052098',user:'陈雅芳',phone:'137****8431',oxygen:{done:false,source:'未上传',value:'--'},diet:{done:true,source:'手动填写',value:'清淡饮食'},exercise:{done:true,source:'手动填写',value:'八段锦20分'},sleep:{done:true,source:'手环同步',value:'8时05分'},score:84,updated:'今天 08:52',attention:false},
+      {id:'U2026041132',user:'徐志强',phone:'186****2294',oxygen:{done:true,source:'设备同步',value:'45分钟'},diet:{done:true,source:'手动填写',value:'三餐规律'},exercise:{done:true,source:'手环同步',value:'8,104步'},sleep:{done:false,source:'未同步',value:'--'},score:81,updated:'今天 08:35',attention:false},
+      {id:'U2026030755',user:'王秀兰',phone:'158****9052',oxygen:{done:true,source:'设备同步',value:'60分钟'},diet:{done:false,source:'未填写',value:'--'},exercise:{done:false,source:'未填写',value:'--'},sleep:{done:true,source:'手环同步',value:'5时46分'},score:68,updated:'今天 07:58',attention:true}
     ];
     const reports=[
       {name:'林婉清',id:'R20260819032',date:'今天 09:46',score:82,result:'整体状态良好',store:'滨江店',change:'+4'},
@@ -524,6 +573,26 @@
       return `${pageHead('用户管理','汇总C端用户、会员、设备、健康、氧疗和消费数据，形成统一用户档案。',`<button class="btn" data-action="export">${icon('export')}导出用户</button>`)}<div class="stats-grid">${statCard('blue','平台注册用户','8,426','人','+12.6%','users')}${statCard('cyan','本月活跃用户','4,892','人','+16.4%','heart')}${statCard('purple','已绑定设备用户','2,084','人','+10.8%','device')}${statCard('orange','会员用户','5,316','人','+9.5%','shield')}</div><div class="toolbar card"><div class="search-field">${icon('search')}<input class="field" id="userSearch" value="${state.userSearch}" placeholder="搜索姓名、手机号或用户编号" data-action="user-search"></div><select class="select"><option>全部会员等级</option><option>普通会员</option><option>黄金会员</option><option>铂金会员</option></select><select class="select"><option>全部健康状态</option><option>状态良好</option><option>需关注</option></select><div class="toolbar-spacer"></div><span class="result-count">用户数据已脱敏展示</span></div><section class="page-card card"><div class="table-head"><h2>用户列表</h2><span>综合数据来源：小程序、设备、商城和门店系统</span></div><div class="table-wrap"><table><thead><tr><th>用户</th><th>会员等级</th><th>绑定设备</th><th>氧疗次数</th><th>健康状态</th><th>累计消费</th><th>最近活跃</th><th>操作</th></tr></thead><tbody>${filtered.map((u,i)=>`<tr class="clickable" data-action="user-detail" data-user="${u.id}"><td><div class="cell-main"><span class="cell-avatar" style="color:var(--purple);background:var(--purple-soft)">${u.name.slice(0,1)}</span><div class="cell-copy"><strong>${u.name}</strong><span>${u.phone} · ${u.id}</span></div></div></td><td>${u.member}</td><td>${u.device}</td><td>${u.oxygen}</td><td><span class="status ${u.health==='良好'?'online':'warning'}">${u.health}</span></td><td>${u.spent}</td><td>${u.active}</td><td><button class="btn ghost small" data-action="user-detail" data-user="${u.id}">${icon('eye')}用户档案</button></td></tr>`).join('')}</tbody></table></div><div class="pagination"><span>显示 1–${filtered.length} 条，共 8,426 条</span><div class="page-buttons"><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></div></section>`;
     }
 
+    function lifeCell(item){
+      return `<div class="life-cell ${item.done?'':'missing'}"><strong>${item.done?item.value:'未打卡'}</strong><span>${item.source}</span></div>`;
+    }
+
+    function lifestylePage(){
+      const dimensions=[
+        {id:'oxygen',label:'吸氧',icon:'oxygen',rate:82,count:'2,334人',className:'',color:'var(--primary)'},
+        {id:'diet',label:'饮食',icon:'order',rate:64,count:'1,821人',className:'diet',color:'var(--orange)'},
+        {id:'exercise',label:'练习',icon:'heart',rate:76,count:'2,163人',className:'exercise',color:'var(--green)'},
+        {id:'sleep',label:'睡眠',icon:'clock',rate:91,count:'2,590人',className:'sleep',color:'var(--purple)'}
+      ];
+      const filtered=lifestyleRecords.filter(r=>state.lifestyleDimension==='all'||r[state.lifestyleDimension].done);
+      const actions=`<button class="btn" data-action="export">${icon('export')}导出生活方式报表</button>`;
+      return `${pageHead('客户行为及生活方式监管','汇总用户设备使用记录与吸氧、饮食、练习、睡眠四维打卡数据，支持总部持续跟踪与干预。',actions)}
+      <div class="stats-grid">${statCard('blue','今日打卡用户','2,846','人','+12.4%','users')}${statCard('cyan','四维综合完成率','78.6','%','+3.8%','check')}${statCard('purple','设备自动采集','68.4','%','+6.2%','device')}${statCard('orange','需关注用户','126','人','-8.2%','alert')}</div>
+      <div class="lifestyle-overview"><section class="panel card"><div class="panel-head"><div><h2>四维数据完成情况</h2><p>今日各维度上传人数与总体完成率</p></div><span class="status online">实时汇总</span></div><div class="dimension-list">${dimensions.map(d=>`<div class="dimension-row"><span class="dimension-mark ${d.className}">${icon(d.icon)}</span><div class="dimension-name"><strong>${d.label}打卡</strong><span>${d.count} 已上传</span></div><div class="dimension-track"><i style="width:${d.rate}%;background:${d.color}"></i></div><strong class="dimension-rate">${d.rate}%</strong></div>`).join('')}</div></section><section class="panel card"><div class="panel-head"><div><h2>数据来源构成</h2><p>硬件自动采集与用户手动填写</p></div></div><div class="source-summary"><div class="source-donut"><div><strong>68.4%</strong><span>设备自动采集</span></div></div><div class="source-breakdown"><div><span>氧舱与舌诊设备</span><strong>34.6%</strong></div><div><span>个人手环同步</span><strong>33.8%</strong></div><div><span>小程序手动填写</span><strong>31.6%</strong></div></div></div></section></div>
+      <div class="toolbar card"><div class="range-switch">${[['all','全部用户'],['oxygen','吸氧'],['diet','饮食'],['exercise','练习'],['sleep','睡眠']].map(x=>`<button class="${state.lifestyleDimension===x[0]?'active':''}" data-action="lifestyle-filter" data-type="${x[0]}">${x[1]}</button>`).join('')}</div><div class="toolbar-spacer"></div><span class="result-count">展示 ${filtered.length} 条重点用户记录</span></div>
+      <section class="page-card card"><div class="table-head"><h2>用户今日行为与生活方式记录</h2><span>设备数据自动同步，手动数据来自泰瑞之家小程序</span></div><div class="table-wrap"><table><thead><tr><th>用户</th><th>吸氧</th><th>饮食</th><th>练习</th><th>睡眠</th><th>今日完成度</th><th>综合状态</th><th>最后更新</th><th>操作</th></tr></thead><tbody>${filtered.map(r=>{const done=['oxygen','diet','exercise','sleep'].filter(k=>r[k].done).length;return `<tr class="clickable" data-action="lifestyle-detail" data-user="${r.id}"><td><div class="cell-main"><span class="cell-avatar" style="color:var(--cyan);background:var(--cyan-soft)">${r.user.slice(0,1)}</span><div class="cell-copy"><strong>${r.user}</strong><span>${r.phone} · ${r.id}</span></div></div></td><td>${lifeCell(r.oxygen)}</td><td>${lifeCell(r.diet)}</td><td>${lifeCell(r.exercise)}</td><td>${lifeCell(r.sleep)}</td><td><div class="completion"><strong>${done}/4</strong><div class="progress"><i style="width:${done*25}%"></i></div></div></td><td><span class="behavior-score ${r.attention?'attention':''}"><i></i>${r.attention?'需关注':r.score>=88?'状态良好':'持续观察'}</span></td><td>${r.updated}</td><td><button class="btn ghost small" data-action="lifestyle-detail" data-user="${r.id}">${icon('eye')}查看详情</button></td></tr>`}).join('')}</tbody></table></div></section>`;
+    }
+
     function oxygenPage(){
       const filtered=oxygenRecords.filter(r=>state.oxygenType==='all'||(state.oxygenType==='home'?r.type==='家庭氧疗':r.type==='门店氧疗'));
       return `${pageHead('氧疗服务','统一查看家庭与门店氧疗记录，关联氧舱运行数据和手环健康数据。',`<button class="btn" data-action="export">${icon('export')}导出记录</button>`)}<div class="stats-grid">${statCard('blue','今日氧疗人次','263','次','+18.2%','oxygen')}${statCard('cyan','家庭氧疗','142','次','+14.6%','device')}${statCard('purple','门店氧疗','121','次','+22.4%','store')}${statCard('orange','平均服务时长','48','分钟','+3.1%','clock')}</div><div class="two-col"><section class="panel card"><div class="panel-head"><div><h2>近期氧疗趋势</h2><p>家庭与门店服务量对比</p></div><div class="legend"><span><i style="background:var(--primary)"></i>家庭氧疗</span><span><i style="background:var(--cyan)"></i>门店氧疗</span></div></div>${lineChart()}</section><section class="panel card"><div class="panel-head"><div><h2>氧疗效果概览</h2><p>基于手环采集数据统计</p></div></div><div class="donut-wrap"><div class="donut" style="background:conic-gradient(var(--cyan) 0 88%,#e6ebf3 88%)"><div class="donut-copy"><strong>88%</strong><span>有效数据覆盖率</span></div></div></div><div class="device-legend"><div><span>平均血氧提升</span><strong class="delta-up">+2.6%</strong></div><div><span>平均心率变化</span><strong>-4 bpm</strong></div><div><span>健康数据完整</span><strong>232 次</strong></div><div><span>数据缺失</span><strong>31 次</strong></div></div></section></div><div class="toolbar card" style="margin-top:14px"><div class="range-switch">${[['all','全部记录'],['home','家庭氧疗'],['store','门店氧疗']].map(x=>`<button class="${state.oxygenType===x[0]?'active':''}" data-action="oxygen-filter" data-type="${x[0]}">${x[1]}</button>`).join('')}</div><div class="toolbar-spacer"></div><span class="result-count">共 ${filtered.length} 条示例记录</span></div><section class="page-card card"><div class="table-head"><h2>氧疗记录</h2><span>门店数据同步自原门店系统</span></div><div class="table-wrap"><table><thead><tr><th>记录编号</th><th>用户</th><th>类型</th><th>设备与地点</th><th>模式</th><th>时长</th><th>血氧变化</th><th>时间</th><th>操作</th></tr></thead><tbody>${filtered.map(r=>`<tr class="clickable" data-action="oxygen-detail" data-record="${r.id}"><td>${r.id}</td><td><div class="cell-main"><span class="cell-avatar">${r.user.slice(0,1)}</span><div class="cell-copy"><strong>${r.user}</strong><span>健康数据已关联</span></div></div></td><td><span class="status ${r.type==='家庭氧疗'?'running':'online'}">${r.type}</span></td><td>${r.place}</td><td>${r.mode}</td><td>${r.duration}</td><td><span>${r.before}</span> → <strong class="delta-up">${r.after}</strong></td><td>${r.time}</td><td><button class="btn ghost small" data-action="oxygen-detail" data-record="${r.id}">${icon('eye')}查看分析</button></td></tr>`).join('')}</tbody></table></div></section>`;
@@ -552,7 +621,7 @@
 
     function placeholderPage(type){return `${pageHead(type==='analytics'?'数据分析中心':'系统管理',type==='analytics'?'面向总部运营的专题分析与报表中心。':'管理总部账号、角色权限、系统参数、消息和审计日志。')}<section class="panel card"><div class="panel-head"><div><h2>${type==='analytics'?'专题分析':'基础配置'}</h2><p>本次原型聚焦主要业务页面，该模块展示为结构占位。</p></div></div><div class="stats-grid" style="margin:20px 0 0">${type==='analytics'?statCard('blue','用户分析','12','个专题','+2','users')+statCard('cyan','设备分析','8','个专题','+1','device')+statCard('purple','氧疗分析','10','个专题','+3','oxygen')+statCard('orange','经营报表','26','张','+4','chart'):statCard('blue','总部账号','18','个','+1','user')+statCard('cyan','角色权限','6','组','0','shield')+statCard('purple','操作日志','12,684','条','+8.6%','report')+statCard('orange','安全告警','0','项','0','alert')}</div></section>`;}
 
-    const renderers={dashboard:dashboardPage,devices:devicesPage,users:usersPage,oxygen:oxygenPage,stores:storesPage,reports:reportsPage,integration:integrationPage,analytics:()=>placeholderPage('analytics'),settings:()=>placeholderPage('settings')};
+    const renderers={dashboard:dashboardPage,devices:devicesPage,users:usersPage,lifestyle:lifestylePage,oxygen:oxygenPage,stores:storesPage,reports:reportsPage,integration:integrationPage,analytics:()=>placeholderPage('analytics'),settings:()=>placeholderPage('settings')};
     function renderNav(){document.getElementById('mainNav').innerHTML=mainNav.map(n=>`<button class="nav-item ${state.page===n.id?'active':''}" data-action="go" data-page="${n.id}"><span class="nav-icon">${icon(n.icon)}</span><span class="nav-label">${n.label}</span>${n.badge?`<span class="nav-badge">${n.badge}</span>`:''}</button>`).join('');document.getElementById('systemNav').innerHTML=systemNav.map(n=>`<button class="nav-item ${state.page===n.id?'active':''}" data-action="go" data-page="${n.id}"><span class="nav-icon">${icon(n.icon)}</span><span class="nav-label">${n.label}</span></button>`).join('');}
     function render(){renderNav();document.getElementById('content').innerHTML=renderers[state.page]();}
     function navigate(page){if(!renderers[page])return;state.page=page;render();document.querySelector('.content').scrollTop=0;window.scrollTo({top:0,behavior:'smooth'});}
@@ -565,6 +634,8 @@
     function deviceDetail(id){const d=devices.find(x=>x.id===id)||devices[0];openDrawer('设备详情',`<div class="detail-hero"><div class="detail-hero-top"><div><strong>${d.name}</strong><p>${d.id} · ${d.type}</p></div><span class="status ${d.status}" style="background:rgba(255,255,255,.16);color:#fff">${d.status==='online'?'设备在线':d.status==='offline'?'设备离线':'维护中'}</span></div><div class="detail-kpis"><div><span>当前状态</span><strong>${d.run}</strong></div><div><span>累计使用</span><strong>${d.used}</strong></div><div><span>最后通信</span><strong>${d.last}</strong></div></div></div><div class="drawer-tabs"><button class="active">基础信息</button><button>运行数据</button><button>使用记录</button><button>告警维修</button></div><div class="detail-section"><h3>设备基础信息</h3><div class="detail-info"><div><span>业务归属</span><strong>${d.owner}</strong></div><div><span>当前归属</span><strong>${d.ownerName}</strong></div><div><span>所在城市</span><strong>${d.city}</strong></div><div><span>设备型号</span><strong>${d.type==='氧舱'?'T3 标准版':d.type==='手环'?'S2 标准版':'M1 一体机'}</strong></div><div><span>激活时间</span><strong>2026-05-18</strong></div><div><span>固件版本</span><strong>v2.6.3</strong></div></div></div><div class="detail-section"><h3>近7日运行趋势</h3><svg class="mini-trend" viewBox="0 0 480 120"><path d="M18 92 C65 80,78 88,116 63 S182 74,222 51 S289 66,332 37 S404 51,462 24" fill="none" stroke="#2871f2" stroke-width="3"/><path d="M18 92 C65 80,78 88,116 63 S182 74,222 51 S289 66,332 37 S404 51,462 24 L462 110 L18 110Z" fill="#2871f2" opacity=".08"/></svg></div><div class="modal-actions"><button class="btn" data-action="toast" data-message="设备运行日志已导出">${icon('export')}导出日志</button><button class="btn primary" data-action="toast" data-message="已进入远程监控">${icon('eye')}实时监控</button></div>`);}
 
     function userDetail(id){const u=users.find(x=>x.id===id)||users[0];openDrawer('统一用户档案',`<div class="detail-hero" style="background:linear-gradient(135deg,#6258d6,#7f72e6 55%,#3c9bc5)"><div class="detail-hero-top"><div><strong>${u.name}</strong><p>${u.phone} · ${u.id}</p></div><span class="status online" style="background:rgba(255,255,255,.16);color:#fff">${u.member}</span></div><div class="detail-kpis"><div><span>绑定设备</span><strong>${u.device}</strong></div><div><span>氧疗次数</span><strong>${u.oxygen}</strong></div><div><span>累计消费</span><strong>${u.spent}</strong></div></div></div><div class="drawer-tabs"><button class="active">用户概览</button><button>健康数据</button><button>设备关系</button><button>消费记录</button></div><div class="detail-section"><h3>健康概览</h3><div class="detail-info"><div><span>综合健康指数</span><strong class="delta-up">86 · 状态良好</strong></div><div><span>最近血氧</span><strong>98%</strong></div><div><span>静息心率</span><strong>72 bpm</strong></div><div><span>最近检测报告</span><strong>82 分</strong></div></div></div><div class="detail-section"><h3>用户数据关系</h3><div class="alert-list"><div class="alert-item"><span class="alert-icon" style="color:var(--primary);background:var(--primary-soft)">${icon('device')}</span><div class="alert-copy"><strong>设备数据</strong><span>已关联个人氧舱、手环及36次设备使用记录</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--cyan);background:var(--cyan-soft)">${icon('oxygen')}</span><div class="alert-copy"><strong>氧疗与门店服务</strong><span>家庭氧疗28次，门店氧疗8次</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('order')}</span><div class="alert-copy"><strong>商城与会员数据</strong><span>${u.member} · 累计消费 ${u.spent}</span></div></div></div></div>`);}
+
+    function lifestyleDetail(id){const r=lifestyleRecords.find(x=>x.id===id)||lifestyleRecords[0];const done=['oxygen','diet','exercise','sleep'].filter(k=>r[k].done).length;openDrawer('行为与生活方式详情',`<div class="detail-hero" style="background:linear-gradient(135deg,#187d9d,#24aa9c 58%,#5f67d8)"><div class="detail-hero-top"><div><strong>${r.user}</strong><p>${r.phone} · ${r.id}</p></div><span class="status ${r.attention?'warning':'online'}" style="background:rgba(255,255,255,.16);color:#fff">${r.attention?'需关注':'状态稳定'}</span></div><div class="detail-kpis"><div><span>今日完成</span><strong>${done}/4 项</strong></div><div><span>生活方式评分</span><strong>${r.score} 分</strong></div><div><span>最后更新</span><strong>${r.updated}</strong></div></div></div><div class="drawer-tabs"><button class="active">今日记录</button><button>历史趋势</button><button>设备使用</button><button>跟进记录</button></div><div class="detail-section"><h3>今日四维打卡</h3><div class="detail-info"><div><span>吸氧</span><strong>${r.oxygen.done?r.oxygen.value:'未打卡'} · ${r.oxygen.source}</strong></div><div><span>饮食</span><strong>${r.diet.done?r.diet.value:'未打卡'} · ${r.diet.source}</strong></div><div><span>练习</span><strong>${r.exercise.done?r.exercise.value:'未打卡'} · ${r.exercise.source}</strong></div><div><span>睡眠</span><strong>${r.sleep.done?r.sleep.value:'未打卡'} · ${r.sleep.source}</strong></div></div></div><div class="detail-section"><h3>近7日完成趋势</h3><svg class="mini-trend" viewBox="0 0 480 120"><path d="M18 82 C62 75,93 88,132 62 S208 67,248 49 S322 58,366 40 S425 38,462 25" fill="none" stroke="#22a99a" stroke-width="3"/><path d="M18 82 C62 75,93 88,132 62 S208 67,248 49 S322 58,366 40 S425 38,462 25 L462 110 L18 110Z" fill="#22a99a" opacity=".1"/></svg></div><div class="detail-section"><h3>系统提示</h3><div class="alert-item" style="background:${r.attention?'var(--orange-soft)':'var(--green-soft)'}"><span class="alert-icon" style="color:${r.attention?'var(--orange)':'var(--green)'};background:#fff">${icon(r.attention?'alert':'check')}</span><div class="alert-copy"><strong>${r.attention?'今日数据存在缺项':'今日生活方式整体稳定'}</strong><span>${r.attention?'建议关注未完成维度，并结合连续7日趋势进行用户跟进。':'四维数据完成度较好，可继续观察氧疗、运动与睡眠的关联变化。'}</span></div></div></div><div class="modal-actions"><button class="btn" data-action="export">${icon('export')}导出个人报表</button><button class="btn primary" data-action="toast" data-message="跟进任务已创建">${icon('check')}创建跟进任务</button></div>`);}
 
     function oxygenDetail(id){const r=oxygenRecords.find(x=>x.id===id)||oxygenRecords[0];openDrawer('氧疗记录详情',`<div class="detail-hero"><div class="detail-hero-top"><div><strong>${r.type} · ${r.mode}</strong><p>${r.id} · ${r.time}</p></div><span class="status done" style="background:rgba(255,255,255,.16);color:#fff">已完成</span></div><div class="detail-kpis"><div><span>使用时长</span><strong>${r.duration}</strong></div><div><span>氧疗前血氧</span><strong>${r.before}</strong></div><div><span>氧疗后血氧</span><strong>${r.after}</strong></div></div></div><div class="detail-section"><h3>关联信息</h3><div class="detail-info"><div><span>使用用户</span><strong>${r.user}</strong></div><div><span>设备与地点</span><strong>${r.place}</strong></div><div><span>氧舱数据</span><strong>完整</strong></div><div><span>手环健康数据</span><strong class="delta-up">完整</strong></div></div></div><div class="detail-section"><h3>本次健康数据趋势</h3><svg class="mini-trend" viewBox="0 0 480 120"><path d="M18 84 C70 85,97 75,138 72 S210 62,255 57 S340 43,385 38 S430 31,462 27" fill="none" stroke="#1eb6a5" stroke-width="3"/><path d="M18 84 C70 85,97 75,138 72 S210 62,255 57 S340 43,385 38 S430 31,462 27 L462 110 L18 110Z" fill="#1eb6a5" opacity=".1"/></svg></div><div class="detail-section"><h3>系统分析</h3><div class="alert-item" style="background:var(--green-soft)"><span class="alert-icon" style="color:var(--green);background:#fff">${icon('check')}</span><div class="alert-copy"><strong>本次氧疗数据表现良好</strong><span>血氧提升 ${parseInt(r.after)-parseInt(r.before)}%，氧疗过程中心率保持平稳，未出现异常设备告警。</span></div></div></div>`);}
 
@@ -582,6 +653,8 @@
       if(a==='export')toast('报表导出任务已创建');
       if(a==='device-detail')deviceDetail(t.dataset.id);
       if(a==='user-detail')userDetail(t.dataset.user);
+      if(a==='lifestyle-detail')lifestyleDetail(t.dataset.user);
+      if(a==='lifestyle-filter'){state.lifestyleDimension=t.dataset.type;render();}
       if(a==='oxygen-detail')oxygenDetail(t.dataset.record);
       if(a==='store-detail')storeDetail(t.dataset.store);
       if(a==='close-drawer')closeDrawer();

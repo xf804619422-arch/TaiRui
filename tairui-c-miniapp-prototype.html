@@ -265,7 +265,7 @@
       height: 68px;
       flex: 0 0 68px;
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       align-items: center;
       padding: 5px 8px 7px;
       background: rgba(255,255,255,.97);
@@ -286,6 +286,9 @@
 
     .tabbar button svg { width: 22px; height: 22px; }
     .tabbar button.active { color: var(--brand); font-weight: 700; }
+    .tabbar button[data-page="assistant"] { transform: translateY(-5px); }
+    .ai-tab-icon { width: 38px; height: 38px; display: grid; place-items: center; margin: -9px auto -2px; border: 4px solid #fff; border-radius: 50%; color: #fff; background: linear-gradient(145deg,var(--purple),var(--brand)); box-shadow: 0 7px 17px rgba(76,89,209,.28); font-size: 18px; line-height: 1; }
+    .tabbar button[data-page="assistant"].active .ai-tab-icon { background: linear-gradient(145deg,#6553e8,#1f75ee); box-shadow: 0 8px 20px rgba(39,110,241,.32); }
 
     .section-head {
       display: flex;
@@ -394,11 +397,15 @@
     .device-card-main { display: flex; gap: 13px; padding: 15px; cursor: pointer; }
     .device-visual { position: relative; width: 105px; height: 116px; flex: 0 0 105px; display: grid; place-items: center; overflow: hidden; border-radius: 17px; background: linear-gradient(145deg,#edf4ff,#dae9ff); }
     .device-visual.bracelet { background: linear-gradient(145deg,#f1efff,#e4e0ff); }
+    .device-visual.tongue { background: linear-gradient(145deg,#fff1f3,#ffe1e7); }
     .cabin-art { position: relative; width: 56px; height: 85px; border-radius: 28px 28px 13px 13px; background: linear-gradient(90deg,#fefefe,#cbd9ef); box-shadow: 8px 9px 17px rgba(64,91,137,.2); }
     .cabin-art::before { content: ""; position: absolute; width: 36px; height: 38px; left: 10px; top: 10px; border-radius: 20px 20px 10px 10px; background: linear-gradient(145deg,#76b3ec,#346eb5); box-shadow: inset 4px 4px 8px rgba(255,255,255,.35); }
     .cabin-art::after { content: "T"; position: absolute; bottom: 11px; left: 0; right: 0; text-align: center; color: #52709a; font-size: 12px; font-weight: 800; }
     .watch-art { width: 40px; height: 62px; position: relative; border: 7px solid #45465c; border-radius: 16px; background: linear-gradient(145deg,#22263b,#5260a2); box-shadow: 0 -25px 0 -16px #8f92af, 0 25px 0 -16px #8f92af, 8px 11px 18px rgba(73,72,131,.25); }
     .watch-art::before { content: "♥"; position: absolute; inset: 0; display: grid; place-items: center; color: #ff8093; font-size: 13px; }
+    .tongue-art { position: relative; width: 64px; height: 72px; border: 6px solid #46546b; border-radius: 12px; background: linear-gradient(145deg,#f8fbff,#dbe5f3); box-shadow: 8px 10px 18px rgba(72,88,116,.2); }
+    .tongue-art::before { content: ""; position: absolute; left: 10px; right: 10px; top: 10px; height: 37px; border-radius: 8px; background: linear-gradient(160deg,#ffb5c1,#e9788c); box-shadow: inset 0 0 0 4px #fff; }
+    .tongue-art::after { content: "AI"; position: absolute; left: 0; right: 0; bottom: 4px; color: #53627a; text-align: center; font-size: 8px; font-weight: 800; }
     .online-dot { position: absolute; top: 9px; left: 9px; display: flex; align-items: center; gap: 4px; padding: 4px 6px; border-radius: 8px; color: var(--success); background: rgba(255,255,255,.8); font-size: 8px; font-weight: 700; }
     .online-dot i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
     .device-info { flex: 1; min-width: 0; }
@@ -591,6 +598,75 @@
     .outline-btn { padding: 7px 11px; border: 1px solid var(--line); border-radius: 16px; background: #fff; color: var(--text); font-size: 9px; cursor: pointer; }
     .outline-btn.primary { color: var(--brand); border-color: #b7cdfb; }
 
+    .daily-card { overflow: hidden; padding: 14px; }
+    .daily-overview { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .daily-overview strong { display: block; font-size: 13px; }
+    .daily-overview span { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; }
+    .daily-progress { --done: 75%; width: 68px; height: 7px; overflow: hidden; border-radius: 7px; background: #ebeff5; }
+    .daily-progress i { display: block; width: var(--done); height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--brand),var(--aqua)); }
+    .daily-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; }
+    .daily-item { position: relative; min-width: 0; padding: 10px 3px 9px; border: 1px solid var(--line); border-radius: 13px; color: var(--text); background: #fbfcfe; cursor: pointer; text-align: center; }
+    .daily-item.done { color: var(--success); border-color: #cbeee3; background: var(--aqua-soft); }
+    .daily-item-icon { width: 31px; height: 31px; display: grid; place-items: center; margin: 0 auto 6px; border-radius: 10px; color: var(--brand); background: var(--brand-soft); }
+    .daily-item:nth-child(2) .daily-item-icon { color: var(--orange); background: var(--orange-soft); }
+    .daily-item:nth-child(3) .daily-item-icon { color: var(--purple); background: var(--purple-soft); }
+    .daily-item:nth-child(4) .daily-item-icon { color: #4f77c8; background: #edf3ff; }
+    .daily-item.done .daily-item-icon { color: var(--success); background: #fff; }
+    .daily-item strong { display: block; font-size: 10px; }
+    .daily-item small { display: block; margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .daily-item.done small { color: var(--success); }
+
+    .checkin-hero { padding: 15px; color: #fff; border-radius: 20px; background: linear-gradient(135deg,#2469dd,#2d8ce7 55%,#22aaa3); box-shadow: 0 12px 28px rgba(39,110,241,.2); }
+    .checkin-hero-top { display: flex; align-items: center; justify-content: space-between; }
+    .checkin-hero strong { font-size: 15px; }
+    .checkin-hero span { color: rgba(255,255,255,.76); font-size: 9px; }
+    .checkin-count { display: flex; align-items: end; gap: 5px; margin-top: 13px; }
+    .checkin-count b { font-size: 28px; line-height: 1; }
+    .checkin-tabs { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin: 13px 0; }
+    .checkin-tabs button { padding: 9px 3px; border: 1px solid var(--line); border-radius: 11px; color: var(--muted); background: #fff; cursor: pointer; font-size: 9px; }
+    .checkin-tabs button.active { color: var(--brand); border-color: #aac5fa; background: var(--brand-soft); font-weight: 700; }
+    .checkin-form { padding: 15px; }
+    .checkin-form h3 { margin: 0; font-size: 14px; }
+    .checkin-form > p { margin: 5px 0 13px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .source-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px; border-radius: 12px; background: #eff3f8; }
+    .source-switch button { padding: 8px; border: 0; border-radius: 9px; color: var(--muted); background: transparent; cursor: pointer; font-size: 9px; }
+    .source-switch button.active { color: var(--brand); background: #fff; box-shadow: 0 3px 9px rgba(42,65,106,.08); font-weight: 700; }
+    .device-import { display: flex; align-items: center; gap: 11px; margin-top: 13px; padding: 13px; border: 1px solid #dbe6f8; border-radius: 13px; background: #f5f9ff; }
+    .device-import-icon { width: 38px; height: 38px; flex: 0 0 38px; display: grid; place-items: center; border-radius: 12px; color: var(--brand); background: #fff; }
+    .device-import-copy { flex: 1; min-width: 0; }
+    .device-import-copy strong { display: block; font-size: 11px; }
+    .device-import-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 8px; }
+    .device-import button { padding: 7px 9px; border: 0; border-radius: 10px; color: #fff; background: var(--brand); cursor: pointer; font-size: 8px; }
+    .manual-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 13px; }
+    .manual-field label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 8px; }
+    .manual-field input, .manual-field select { width: 100%; height: 36px; padding: 0 9px; border: 1px solid var(--line); border-radius: 10px; outline: none; color: var(--text); background: #fff; font-size: 9px; }
+
+    .ai-shell { min-height: 100%; display: flex; flex-direction: column; }
+    .ai-intro { position: relative; overflow: hidden; padding: 15px; color: #fff; border-radius: 20px; background: linear-gradient(135deg,#6657dc,#377ce9 60%,#27a7b2); box-shadow: 0 12px 28px rgba(82,83,204,.22); }
+    .ai-intro::after { content: "✦"; position: absolute; right: 17px; top: 10px; color: rgba(255,255,255,.17); font-size: 58px; }
+    .ai-intro strong { display: block; font-size: 15px; }
+    .ai-intro p { margin: 6px 0 0; color: rgba(255,255,255,.78); font-size: 9px; line-height: 1.55; }
+    .ai-prompts { display: flex; gap: 6px; overflow-x: auto; padding: 11px 1px 4px; scrollbar-width: none; }
+    .ai-prompts::-webkit-scrollbar { display: none; }
+    .ai-prompts button { flex: 0 0 auto; padding: 7px 10px; border: 1px solid #dcd9fb; border-radius: 15px; color: #6358c8; background: #f7f5ff; cursor: pointer; font-size: 8px; }
+    .chat-list { display: grid; gap: 10px; padding: 10px 0 12px; }
+    .chat-row { display: flex; align-items: flex-start; gap: 8px; }
+    .chat-row.user { justify-content: flex-end; }
+    .chat-avatar { width: 28px; height: 28px; flex: 0 0 28px; display: grid; place-items: center; border-radius: 10px; color: #fff; background: linear-gradient(145deg,var(--purple),var(--brand)); font-size: 12px; font-weight: 800; }
+    .chat-bubble { max-width: 82%; padding: 10px 12px; border: 1px solid #e6e5f7; border-radius: 5px 14px 14px 14px; color: var(--text); background: #fff; font-size: 9px; line-height: 1.6; box-shadow: 0 5px 14px rgba(50,60,110,.045); }
+    .chat-row.user .chat-bubble { color: #fff; border: 0; border-radius: 14px 5px 14px 14px; background: linear-gradient(135deg,var(--brand),#4f78df); }
+    .ai-report-card { margin-top: 9px; padding: 10px; border-radius: 12px; background: #f5f8ff; }
+    .ai-report-title { display: flex; align-items: center; justify-content: space-between; color: var(--ink); font-weight: 700; }
+    .ai-report-title span { color: var(--success); font-size: 8px; }
+    .ai-report-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 9px; }
+    .ai-report-metrics div { padding: 8px 3px; border-radius: 9px; background: #fff; text-align: center; }
+    .ai-report-metrics strong { display: block; color: var(--ink); font-size: 12px; }
+    .ai-report-metrics small { display: block; margin-top: 3px; color: var(--muted); font-size: 7px; }
+    .ai-composer { position: sticky; bottom: -24px; display: flex; align-items: center; gap: 7px; margin-top: auto; padding: 10px 0 2px; background: linear-gradient(180deg,rgba(243,246,251,0),var(--canvas) 24%); }
+    .ai-composer input { flex: 1; min-width: 0; height: 39px; padding: 0 12px; border: 1px solid #dfe4ed; border-radius: 13px; outline: none; color: var(--text); background: #fff; font-size: 9px; box-shadow: 0 5px 15px rgba(44,61,94,.06); }
+    .ai-composer input:focus { border-color: #b5b0f1; box-shadow: 0 0 0 3px rgba(124,108,242,.08); }
+    .ai-send { width: 39px; height: 39px; flex: 0 0 39px; display: grid; place-items: center; border: 0; border-radius: 13px; color: #fff; background: linear-gradient(145deg,var(--purple),var(--brand)); cursor: pointer; font-size: 17px; }
+
     .modal-layer {
       position: absolute;
       z-index: 50;
@@ -746,7 +822,14 @@
       running: false,
       modalAction: null,
       toastTimer: null,
-      tickTimer: null
+      tickTimer: null,
+      checkinType: 'oxygen',
+      checkinSource: 'device',
+      dailyChecks: { oxygen: true, diet: false, exercise: true, sleep: true },
+      aiGenerating: false,
+      aiMessages: [
+        { role: 'assistant', text: '你好，我是泰瑞 AI 健康助手。我可以结合你的吸氧、饮食、练习、睡眠和设备数据，生成趋势分析与健康报表。' }
+      ]
     };
 
     const pages = [
@@ -756,6 +839,8 @@
       { id: 'health', label: '健康中心', icon: 'health' },
       { id: 'records', label: '氧疗记录', icon: 'calendar' },
       { id: 'report', label: '多模态报告', icon: 'report' },
+      { id: 'checkin', label: '每日四维打卡', icon: 'activity' },
+      { id: 'assistant', label: 'AI助手', icon: 'report' },
       { id: 'orders', label: '商城与预约', icon: 'shop' },
       { id: 'profile', label: '个人中心', icon: 'user' }
     ];
@@ -763,6 +848,7 @@
     const tabPages = [
       { id: 'home', label: '首页', icon: 'home' },
       { id: 'health', label: '健康', icon: 'health' },
+      { id: 'assistant', label: 'AI助手', icon: 'report' },
       { id: 'devices', label: '设备', icon: 'device' },
       { id: 'profile', label: '我的', icon: 'user' }
     ];
@@ -775,6 +861,13 @@
     }
 
     function homePage() {
+      const checkinDone = Object.values(state.dailyChecks).filter(Boolean).length;
+      const checkins = [
+        ['oxygen','吸氧','oxygen','氧舱自动同步'],
+        ['diet','饮食','shop','待打卡'],
+        ['exercise','练习','activity','已完成 32分钟'],
+        ['sleep','睡眠','moon','手环已同步']
+      ];
       return `
         <div class="greeting"><div><h1>早上好，林女士</h1><p>今天也要保持好状态</p></div><div class="avatar">林</div></div>
         <div class="hero-health" data-action="go" data-page="health">
@@ -788,6 +881,12 @@
           <button class="quick-item" data-action="go" data-page="health"><span class="quick-icon">${icon('activity')}</span><span>健康数据</span></button>
           <button class="quick-item" data-action="go" data-page="report"><span class="quick-icon">${icon('report')}</span><span>检测报告</span></button>
           <button class="quick-item" data-action="go" data-page="records"><span class="quick-icon">${icon('calendar')}</span><span>氧疗记录</span></button>
+        </div>
+
+        <div class="section-head"><h2>今日四维打卡</h2><button class="text-link" data-action="go" data-page="checkin">查看详情</button></div>
+        <div class="daily-card card">
+          <div class="daily-overview"><div><strong>记录每天的生活方式</strong><span>支持智能硬件同步或手动填写</span></div><div><span>${checkinDone}/4 已完成</span><div class="daily-progress" style="--done:${checkinDone*25}%"><i></i></div></div></div>
+          <div class="daily-grid">${checkins.map(item=>`<button class="daily-item ${state.dailyChecks[item[0]]?'done':''}" data-action="open-checkin" data-type="${item[0]}"><span class="daily-item-icon">${icon(item[2],15)}</span><strong>${item[1]}</strong><small>${state.dailyChecks[item[0]]?item[3]:'待打卡'}</small></button>`).join('')}</div>
         </div>
 
         <div class="section-head"><h2>今日健康</h2><button class="text-link" data-action="go" data-page="health">查看趋势</button></div>
@@ -807,7 +906,7 @@
     function devicesPage() {
       return `
         <div class="section-head first"><h2>设备概览</h2><span>最近同步 09:38</span></div>
-        <div class="device-summary"><div class="summary-cell card"><span>已绑定设备</span><strong>2 台</strong><small>全部状态正常</small></div><div class="summary-cell card"><span>本月使用</span><strong>12 次</strong><small>累计 8.6 小时</small></div></div>
+        <div class="device-summary"><div class="summary-cell card"><span>已绑定设备</span><strong>3 台</strong><small>全部状态正常</small></div><div class="summary-cell card"><span>本月使用</span><strong>16 次</strong><small>累计 8.6 小时</small></div></div>
         <div class="section-head"><h2>我的设备</h2><button class="text-link" data-action="bind-device">+ 添加设备</button></div>
         <div class="device-card card">
           <div class="device-card-main" data-action="go" data-page="control"><div class="device-visual"><span class="online-dot"><i></i>在线</span><div class="cabin-art"></div></div><div class="device-info"><div class="device-title"><div><strong>泰瑞智能氧舱 T3</strong><span>客厅 · TR-T3-02861</span></div>${icon('chevron',15)}</div><div class="device-meta"><div><span>运行状态</span><b>${state.running ? '运行中' : '空闲'}</b></div><div><span>今日使用</span><b>${state.running ? '进行中' : '45 分钟'}</b></div><div><span>舱内氧浓度</span><b>29.8%</b></div></div></div></div>
@@ -816,6 +915,10 @@
         <div class="device-card card">
           <div class="device-card-main"><div class="device-visual bracelet"><span class="online-dot"><i></i>已同步</span><div class="watch-art"></div></div><div class="device-info"><div class="device-title"><div><strong>泰瑞健康手环 S2</strong><span>我的手环 · TR-S2-93218</span></div>${icon('chevron',15)}</div><div class="device-meta"><div><span>设备电量</span><b>76%</b></div><div><span>佩戴状态</span><b>佩戴中</b></div><div><span>数据同步</span><b id="syncTime">刚刚</b></div></div></div></div>
           <div class="device-card-actions"><button data-action="sync">${icon('sync',13)} 同步数据</button><button data-action="go" data-page="health">查看健康</button></div>
+        </div>
+        <div class="device-card card">
+          <div class="device-card-main" data-action="tongue-start"><div class="device-visual tongue"><span class="online-dot"><i></i>在线</span><div class="tongue-art"></div></div><div class="device-info"><div class="device-title"><div><strong>泰瑞健康舌诊</strong><span>家庭健康设备 · TR-TD-20608</span></div>${icon('chevron',15)}</div><div class="device-meta"><div><span>设备状态</span><b>可检测</b></div><div><span>今日检测</span><b>尚未检测</b></div><div><span>最近报告</span><b>8月18日</b></div></div></div></div>
+          <div class="device-card-actions"><button data-action="tongue-start">开始舌诊</button><button data-action="go" data-page="report">查看报告</button></div>
         </div>
         <button class="empty-add" data-action="bind-device">+ 扫码绑定新设备</button>
         <div class="section-head"><h2>设备服务</h2></div>
@@ -867,6 +970,48 @@
         <div class="compare-card card"><div class="compare-head"><strong>最近一次氧疗血氧变化</strong><span>8月18日 · 45分钟</span></div><div class="compare-track"><i></i><i></i></div><div class="compare-labels"><div><strong>95%</strong>氧疗前</div><div style="text-align:right"><strong class="positive">98%</strong>氧疗后</div></div></div>`;
     }
 
+    const checkinConfig = {
+      oxygen: { label:'吸氧', icon:'oxygen', device:'泰瑞智能氧舱 T3', detail:'今日 09:02 · 舒缓模式 45分钟', fields:[['吸氧方式','家庭氧舱'],['吸氧时长','45分钟']] },
+      diet: { label:'饮食', icon:'shop', device:'智能营养数据', detail:'可读取饮食照片与营养识别结果', fields:[['餐次','早餐'],['饮食内容','全麦面包、鸡蛋、牛奶']] },
+      exercise: { label:'练习', icon:'activity', device:'泰瑞健康手环 S2', detail:'今日活动 32分钟 · 6,248步', fields:[['练习类型','健步走'],['练习时长','32分钟']] },
+      sleep: { label:'睡眠', icon:'moon', device:'泰瑞健康手环 S2', detail:'昨夜睡眠 7.4小时 · 深睡 21%', fields:[['入睡时间','22:48'],['起床时间','06:12']] }
+    };
+
+    function checkinPage() {
+      const current = checkinConfig[state.checkinType];
+      const done = Object.values(state.dailyChecks).filter(Boolean).length;
+      return `<div class="checkin-hero"><div class="checkin-hero-top"><strong>今日四维健康打卡</strong><span>9月8日 · 第18天</span></div><div class="checkin-count"><b>${done}</b><span>/ 4 个维度已完成<br>连续打卡 7 天</span></div></div>
+        <div class="checkin-tabs">${Object.entries(checkinConfig).map(([key,item])=>`<button class="${state.checkinType===key?'active':''}" data-action="select-checkin" data-type="${key}">${item.label}${state.dailyChecks[key]?' ✓':''}</button>`).join('')}</div>
+        <div class="checkin-form card"><h3>${current.label}数据打卡</h3><p>选择数据上传方式，确认内容后提交今日记录。</p><div class="source-switch"><button class="${state.checkinSource==='device'?'active':''}" data-action="checkin-source" data-source="device">智能硬件 / 自动同步</button><button class="${state.checkinSource==='manual'?'active':''}" data-action="checkin-source" data-source="manual">手动填写</button></div>
+        ${state.checkinSource==='device'?`<div class="device-import"><span class="device-import-icon">${icon(current.icon)}</span><div class="device-import-copy"><strong>${current.device}</strong><span>${current.detail}</span></div><button data-action="import-checkin">读取数据</button></div>`:`<div class="manual-fields">${current.fields.map(field=>`<div class="manual-field"><label>${field[0]}</label><input value="${field[1]}"></div>`).join('')}<div class="manual-field"><label>感受评分</label><select><option>状态很好</option><option>状态一般</option><option>需要关注</option></select></div><div class="manual-field"><label>补充说明</label><input placeholder="选填"></div></div>`}
+        <button class="primary-action" data-action="save-checkin">${icon('sync')} 保存今日${current.label}打卡</button></div>`;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    }
+
+    function assistantPage() {
+      const messages = state.aiMessages.map(message => {
+        if (message.role === 'user') return `<div class="chat-row user"><div class="chat-bubble">${escapeHtml(message.text)}</div></div>`;
+        return `<div class="chat-row"><span class="chat-avatar">✦</span><div class="chat-bubble">${escapeHtml(message.text)}${message.report?`<div class="ai-report-card"><div class="ai-report-title">健康趋势简报<span>已生成</span></div><div class="ai-report-metrics"><div><strong>86</strong><small>健康指数</small></div><div><strong>3/4</strong><small>今日打卡</small></div><div><strong>+6%</strong><small>周趋势</small></div></div></div>`:''}</div></div>`;
+      }).join('');
+      return `<div class="ai-shell"><div class="ai-intro"><strong>AI 健康分析助手</strong><p>基于设备数据、氧疗记录和四维生活方式打卡，快速生成个人分析和报表。</p></div><div class="ai-prompts"><button data-action="ai-quick" data-prompt="生成本周健康简报">生成本周健康简报</button><button data-action="ai-quick" data-prompt="分析氧疗与睡眠的关系">分析氧疗与睡眠关系</button><button data-action="ai-quick" data-prompt="生成四维打卡报告">生成四维打卡报告</button></div><div class="chat-list">${messages}${state.aiGenerating?`<div class="chat-row"><span class="chat-avatar">✦</span><div class="chat-bubble">正在汇总你的数据并生成分析…</div></div>`:''}</div><div class="ai-composer"><input id="aiInput" placeholder="问问本周健康趋势、氧疗效果…" autocomplete="off"><button class="ai-send" data-action="ai-send" aria-label="发送">↑</button></div></div>`;
+    }
+
+    function askAi(prompt) {
+      const text = String(prompt || '').trim();
+      if (!text || state.aiGenerating) return;
+      state.aiMessages.push({ role:'user', text });
+      state.aiGenerating = true;
+      render();
+      setTimeout(() => {
+        state.aiMessages.push({ role:'assistant', text:'已结合近7天氧疗、手环健康数据与四维打卡完成分析。整体状态平稳，规律吸氧和睡眠时长提升呈正向关系；建议补充今天的饮食打卡，以完善本周报告。', report:true });
+        state.aiGenerating = false;
+        render();
+      }, 850);
+    }
+
     const records = [
       { day:'18', month:'8月', type:'store', title:'门店舒缓氧疗', desc:'泰瑞氧疗中心（滨江店）', duration:'45分钟', before:'95%', after:'98%' },
       { day:'16', month:'8月', type:'home', title:'家庭活力氧疗', desc:'泰瑞智能氧舱 T3', duration:'60分钟', before:'96%', after:'98%' },
@@ -892,21 +1037,22 @@
     }
 
     function profilePage() {
-      return `<div class="profile-card"><div class="profile-top"><div class="profile-avatar">林</div><div class="profile-copy"><strong>林女士</strong><span>健康档案已完善 92%</span></div><span class="member-chip">黄金会员</span></div><div class="profile-stats"><div><strong>2,680</strong><span>积分</span></div><div><strong>8</strong><span>剩余次卡</span></div><div><strong>12</strong><span>本月氧疗</span></div></div></div><div class="section-head"><h2>我的订单</h2><button class="text-link" data-action="go" data-page="orders">全部订单</button></div><div class="order-shortcuts card"><button data-action="go" data-page="orders">${icon('wallet')}待付款<span class="count-dot">1</span></button><button data-action="go" data-page="orders">${icon('box')}待收货</button><button data-action="go" data-page="orders">${icon('calendar')}待服务<span class="count-dot">2</span></button><button data-action="external" data-target="售后服务">${icon('service')}退款/售后</button></div><div class="section-head"><h2>健康与设备</h2></div><div class="menu-list card"><button class="menu-row" data-action="go" data-page="devices"><span class="menu-row-icon" style="color:var(--brand);background:var(--brand-soft)">${icon('device')}</span><span>我的设备</span><small>2 台</small>${icon('chevron',14)}</button><button class="menu-row" data-action="go" data-page="report"><span class="menu-row-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('report')}</span><span>我的检测报告</span><small>3 份</small>${icon('chevron',14)}</button><button class="menu-row" data-action="go" data-page="records"><span class="menu-row-icon" style="color:var(--aqua);background:var(--aqua-soft)">${icon('oxygen')}</span><span>我的氧疗记录</span><small>累计 36 次</small>${icon('chevron',14)}</button></div><div class="section-head"><h2>服务与设置</h2></div><div class="menu-list card"><button class="menu-row" data-action="toast" data-message="健康档案已打开"><span class="menu-row-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('user')}</span><span>个人与健康档案</span>${icon('chevron',14)}</button><button class="menu-row" data-action="toast" data-message="数据授权记录已打开"><span class="menu-row-icon" style="color:var(--aqua);background:var(--aqua-soft)">${icon('shield')}</span><span>数据授权与隐私</span>${icon('chevron',14)}</button><button class="menu-row" data-action="toast" data-message="设置中心已打开"><span class="menu-row-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('settings')}</span><span>系统设置</span>${icon('chevron',14)}</button></div>`;
+      return `<div class="profile-card"><div class="profile-top"><div class="profile-avatar">林</div><div class="profile-copy"><strong>林女士</strong><span>健康档案已完善 92%</span></div><span class="member-chip">黄金会员</span></div><div class="profile-stats"><div><strong>2,680</strong><span>积分</span></div><div><strong>8</strong><span>剩余次卡</span></div><div><strong>12</strong><span>本月氧疗</span></div></div></div><div class="section-head"><h2>我的订单</h2><button class="text-link" data-action="go" data-page="orders">全部订单</button></div><div class="order-shortcuts card"><button data-action="go" data-page="orders">${icon('wallet')}待付款<span class="count-dot">1</span></button><button data-action="go" data-page="orders">${icon('box')}待收货</button><button data-action="go" data-page="orders">${icon('calendar')}待服务<span class="count-dot">2</span></button><button data-action="external" data-target="售后服务">${icon('service')}退款/售后</button></div><div class="section-head"><h2>健康与设备</h2></div><div class="menu-list card"><button class="menu-row" data-action="go" data-page="devices"><span class="menu-row-icon" style="color:var(--brand);background:var(--brand-soft)">${icon('device')}</span><span>我的设备</span><small>3 台</small>${icon('chevron',14)}</button><button class="menu-row" data-action="go" data-page="checkin"><span class="menu-row-icon" style="color:var(--success);background:var(--aqua-soft)">${icon('activity')}</span><span>每日四维打卡</span><small>今日 3/4</small>${icon('chevron',14)}</button><button class="menu-row" data-action="go" data-page="report"><span class="menu-row-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('report')}</span><span>我的检测报告</span><small>3 份</small>${icon('chevron',14)}</button><button class="menu-row" data-action="go" data-page="records"><span class="menu-row-icon" style="color:var(--aqua);background:var(--aqua-soft)">${icon('oxygen')}</span><span>我的氧疗记录</span><small>累计 36 次</small>${icon('chevron',14)}</button></div><div class="section-head"><h2>服务与设置</h2></div><div class="menu-list card"><button class="menu-row" data-action="toast" data-message="健康档案已打开"><span class="menu-row-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('user')}</span><span>个人与健康档案</span>${icon('chevron',14)}</button><button class="menu-row" data-action="toast" data-message="数据授权记录已打开"><span class="menu-row-icon" style="color:var(--aqua);background:var(--aqua-soft)">${icon('shield')}</span><span>数据授权与隐私</span>${icon('chevron',14)}</button><button class="menu-row" data-action="toast" data-message="设置中心已打开"><span class="menu-row-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('settings')}</span><span>系统设置</span>${icon('chevron',14)}</button></div>`;
     }
 
     function ordersPage() {
       return `<div class="sync-banner">${icon('sync')}以下订单和预约数据同步自客户原有商城系统，交易及售后操作将跳转至原小程序办理。</div><div class="filter-row"><button class="active">全部</button><button>商城订单</button><button>服务预约</button></div><div class="order-card card"><div class="order-store"><strong>泰瑞医疗官方商城</strong><span>待收货</span></div><div class="order-product"><div class="order-product-art">${icon('watch')}</div><div class="order-product-copy"><strong>泰瑞健康手环 S2</strong><span>星空灰 · 标准款 ×1</span><b>¥ 699.00</b></div></div><div class="order-actions"><button class="outline-btn" data-action="external" data-target="查看物流">查看物流</button><button class="outline-btn primary" data-action="external" data-target="订单详情">订单详情</button></div></div><div class="order-card card"><div class="order-store"><strong>泰瑞氧疗中心（滨江店）</strong><span style="color:var(--aqua)">待服务</span></div><div class="order-product"><div class="order-product-art" style="color:var(--aqua);background:var(--aqua-soft)">${icon('oxygen')}</div><div class="order-product-copy"><strong>专业舒缓氧疗 · 单次</strong><span>预约时间：8月22日 14:30</span><b>¥ 168.00</b></div></div><div class="order-actions"><button class="outline-btn" data-action="external" data-target="门店导航">门店导航</button><button class="outline-btn primary" data-action="external" data-target="预约详情">查看预约</button></div></div><div class="order-card card"><div class="order-store"><strong>泰瑞医疗官方商城</strong><span style="color:var(--muted)">已完成</span></div><div class="order-product"><div class="order-product-art">${icon('box')}</div><div class="order-product-copy"><strong>氧舱专用清洁护理套装</strong><span>标准套装 ×1</span><b>¥ 128.00</b></div></div><div class="order-actions"><button class="outline-btn" data-action="external" data-target="再次购买">再次购买</button><button class="outline-btn primary" data-action="external" data-target="订单详情">订单详情</button></div></div>`;
     }
 
-    const pageRenderers = { home: homePage, devices: devicesPage, control: controlPage, health: healthPage, records: recordsPage, report: reportPage, orders: ordersPage, profile: profilePage };
-    const pageTitles = { devices:'设备中心', control:'氧舱远程控制', health:'健康中心', records:'氧疗记录', report:'多模态检测报告', orders:'商城与预约', profile:'个人中心' };
+    const pageRenderers = { home: homePage, devices: devicesPage, control: controlPage, health: healthPage, checkin: checkinPage, assistant: assistantPage, records: recordsPage, report: reportPage, orders: ordersPage, profile: profilePage };
+    const pageTitles = { devices:'设备中心', control:'氧舱远程控制', health:'健康中心', checkin:'每日四维打卡', assistant:'AI助手', records:'氧疗记录', report:'多模态检测报告', orders:'商城与预约', profile:'个人中心' };
 
     function render() {
       document.getElementById('appbar').innerHTML = state.page === 'home' ? header('', false) : header(pageTitles[state.page]);
       document.getElementById('screen').innerHTML = pageRenderers[state.page]();
-      document.getElementById('screen').scrollTop = 0;
-      document.getElementById('tabbar').innerHTML = tabPages.map(t => `<button class="${state.page===t.id?'active':''}" data-action="go" data-page="${t.id}">${icon(t.icon)}<span>${t.label}</span></button>`).join('');
+      const screen = document.getElementById('screen');
+      screen.scrollTop = state.page === 'assistant' ? screen.scrollHeight : 0;
+      document.getElementById('tabbar').innerHTML = tabPages.map(t => `<button class="${state.page===t.id?'active':''}" data-action="go" data-page="${t.id}">${t.id==='assistant'?'<span class="ai-tab-icon">✦</span>':icon(t.icon)}<span>${t.label}</span></button>`).join('');
       document.getElementById('screenMenu').innerHTML = pages.map(p => `<button class="${state.page===p.id?'active':''}" data-action="go" data-page="${p.id}"><span class="menu-icon">${icon(p.icon)}</span>${p.label}</button>`).join('');
     }
 
@@ -971,6 +1117,8 @@
         showToast('正在打开客户原商城小程序…');
       } else if (action === 'bind') {
         showToast('已打开扫码绑定');
+      } else if (action === 'tongue') {
+        showToast('舌象采集已开始，请按提示完成检测');
       } else if (action === 'record') {
         showToast('健康分析详情已打开');
       }
@@ -986,6 +1134,20 @@
       if (action === 'period') { state.healthPeriod = target.dataset.period; render(); }
       if (action === 'record-filter') { state.recordFilter = target.dataset.filter; render(); }
       if (action === 'report-tab') { state.reportSection = target.dataset.section; render(); }
+      if (action === 'open-checkin') { state.checkinType = target.dataset.type || 'oxygen'; navigate('checkin'); }
+      if (action === 'select-checkin') { state.checkinType = target.dataset.type; render(); }
+      if (action === 'checkin-source') { state.checkinSource = target.dataset.source; render(); }
+      if (action === 'import-checkin') showToast('已从关联设备读取最新数据');
+      if (action === 'save-checkin') {
+        state.dailyChecks[state.checkinType] = true;
+        render();
+        showToast('今日打卡已保存');
+      }
+      if (action === 'ai-quick') askAi(target.dataset.prompt);
+      if (action === 'ai-send') {
+        const input = document.getElementById('aiInput');
+        askAi(input ? input.value : '');
+      }
       if (action === 'mode' && !state.running) { state.mode = target.dataset.mode; render(); }
       if (action === 'duration' && !state.running) { state.duration = Number(target.dataset.duration); state.remaining = state.duration * 60; render(); }
       if (action === 'toggle-control') {
@@ -993,8 +1155,9 @@
         else openModal({title:'确认开始氧疗',text:`将以${state.mode}模式运行 ${state.duration} 分钟。请确认舱门关闭、环境安全且手环已正常佩戴。`,confirm:'安全启动',action:'start',iconName:'shield'});
       }
       if (action === 'external') openModal({title:`前往${target.dataset.target || '原商城'}`,text:'该业务由客户原有商城小程序提供，泰瑞医疗小程序将携带当前用户身份跳转办理。',confirm:'继续前往',action:'external',iconName:'link'});
-      if (action === 'bind-device') openModal({title:'绑定新设备',text:'请扫描氧舱或手环机身二维码，完成设备验证与绑定。',confirm:'开始扫码',action:'bind',iconName:'device'});
+      if (action === 'bind-device') openModal({title:'绑定新设备',text:'请扫描氧舱、手环或泰瑞健康舌诊设备机身二维码，完成设备验证与绑定。',confirm:'开始扫码',action:'bind',iconName:'device'});
       if (action === 'record-detail') openModal({title:'氧疗效果详情',text:'本次氧疗已关联氧舱运行数据和同时段手环健康数据，可进一步查看完整趋势分析。',confirm:'查看分析',action:'record',iconName:'trend'});
+      if (action === 'tongue-start') openModal({title:'开始泰瑞健康舌诊',text:'请将舌诊设备放置在光线稳定的位置，并按屏幕提示完成舌象采集。',confirm:'开始采集',action:'tongue',iconName:'report'});
       if (action === 'sync') {
         const svg = target.querySelector('svg');
         if (svg) svg.classList.add('spin');
@@ -1003,6 +1166,13 @@
       }
       if (action === 'modal-cancel') closeModal();
       if (action === 'modal-confirm') confirmModalAction();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && event.target && event.target.id === 'aiInput') {
+        event.preventDefault();
+        askAi(event.target.value);
+      }
     });
 
     document.getElementById('sideBrandIcon').innerHTML = icon('logo');
