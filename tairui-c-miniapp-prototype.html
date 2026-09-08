@@ -839,7 +839,7 @@
       { id: 'health', label: '健康中心', icon: 'health' },
       { id: 'records', label: '氧疗记录', icon: 'calendar' },
       { id: 'report', label: '多模态报告', icon: 'report' },
-      { id: 'checkin', label: '每日四维打卡', icon: 'activity' },
+      { id: 'checkin', label: '客户行为及生活方式监管', icon: 'activity' },
       { id: 'assistant', label: 'AI助手', icon: 'report' },
       { id: 'orders', label: '商城与预约', icon: 'shop' },
       { id: 'profile', label: '个人中心', icon: 'user' }
@@ -883,7 +883,7 @@
           <button class="quick-item" data-action="go" data-page="records"><span class="quick-icon">${icon('calendar')}</span><span>氧疗记录</span></button>
         </div>
 
-        <div class="section-head"><h2>今日四维打卡</h2><button class="text-link" data-action="go" data-page="checkin">查看详情</button></div>
+        <div class="section-head"><h2>客户行为及生活方式监管</h2><button class="text-link" data-action="go" data-page="checkin">查看详情</button></div>
         <div class="daily-card card">
           <div class="daily-overview"><div><strong>记录每天的生活方式</strong><span>支持智能硬件同步或手动填写</span></div><div><span>${checkinDone}/4 已完成</span><div class="daily-progress" style="--done:${checkinDone*25}%"><i></i></div></div></div>
           <div class="daily-grid">${checkins.map(item=>`<button class="daily-item ${state.dailyChecks[item[0]]?'done':''}" data-action="open-checkin" data-type="${item[0]}"><span class="daily-item-icon">${icon(item[2],15)}</span><strong>${item[1]}</strong><small>${state.dailyChecks[item[0]]?item[3]:'待打卡'}</small></button>`).join('')}</div>
@@ -980,7 +980,7 @@
     function checkinPage() {
       const current = checkinConfig[state.checkinType];
       const done = Object.values(state.dailyChecks).filter(Boolean).length;
-      return `<div class="checkin-hero"><div class="checkin-hero-top"><strong>今日四维健康打卡</strong><span>9月8日 · 第18天</span></div><div class="checkin-count"><b>${done}</b><span>/ 4 个维度已完成<br>连续打卡 7 天</span></div></div>
+      return `<div class="checkin-hero"><div class="checkin-hero-top"><strong>客户行为及生活方式监管</strong><span>9月8日 · 第18天</span></div><div class="checkin-count"><b>${done}</b><span>/ 4 个维度已完成<br>连续打卡 7 天</span></div></div>
         <div class="checkin-tabs">${Object.entries(checkinConfig).map(([key,item])=>`<button class="${state.checkinType===key?'active':''}" data-action="select-checkin" data-type="${key}">${item.label}${state.dailyChecks[key]?' ✓':''}</button>`).join('')}</div>
         <div class="checkin-form card"><h3>${current.label}数据打卡</h3><p>选择数据上传方式，确认内容后提交今日记录。</p><div class="source-switch"><button class="${state.checkinSource==='device'?'active':''}" data-action="checkin-source" data-source="device">智能硬件 / 自动同步</button><button class="${state.checkinSource==='manual'?'active':''}" data-action="checkin-source" data-source="manual">手动填写</button></div>
         ${state.checkinSource==='device'?`<div class="device-import"><span class="device-import-icon">${icon(current.icon)}</span><div class="device-import-copy"><strong>${current.device}</strong><span>${current.detail}</span></div><button data-action="import-checkin">读取数据</button></div>`:`<div class="manual-fields">${current.fields.map(field=>`<div class="manual-field"><label>${field[0]}</label><input value="${field[1]}"></div>`).join('')}<div class="manual-field"><label>感受评分</label><select><option>状态很好</option><option>状态一般</option><option>需要关注</option></select></div><div class="manual-field"><label>补充说明</label><input placeholder="选填"></div></div>`}
@@ -1045,7 +1045,7 @@
     }
 
     const pageRenderers = { home: homePage, devices: devicesPage, control: controlPage, health: healthPage, checkin: checkinPage, assistant: assistantPage, records: recordsPage, report: reportPage, orders: ordersPage, profile: profilePage };
-    const pageTitles = { devices:'设备中心', control:'氧舱远程控制', health:'健康中心', checkin:'每日四维打卡', assistant:'AI助手', records:'氧疗记录', report:'多模态检测报告', orders:'商城与预约', profile:'个人中心' };
+    const pageTitles = { devices:'设备中心', control:'氧舱远程控制', health:'健康中心', checkin:'客户行为及生活方式监管', assistant:'AI助手', records:'氧疗记录', report:'多模态检测报告', orders:'商城与预约', profile:'个人中心' };
 
     function render() {
       document.getElementById('appbar').innerHTML = state.page === 'home' ? header('', false) : header(pageTitles[state.page]);
