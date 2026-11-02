@@ -435,6 +435,136 @@
       .source-summary { grid-template-columns:1fr; justify-items:center; }
       .source-breakdown { width:100%; }
     }
+
+    /* ===== 健康数据分析 ===== */
+    .region-heat-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:10px; }
+    .region-heat { position:relative; overflow:hidden; min-height:132px; padding:14px 12px; border-radius:13px; color:#fff; box-shadow:0 8px 18px rgba(35,70,120,.12); }
+    .region-heat::after { content:""; position:absolute; width:90px; height:90px; right:-40px; bottom:-42px; border-radius:50%; background:rgba(255,255,255,.1); }
+    .region-heat strong { position:relative; z-index:1; display:block; font-size:12px; font-weight:700; }
+    .region-heat .rh-alt { position:relative; z-index:1; display:block; margin-top:3px; font-size:8px; color:rgba(255,255,255,.78); }
+    .region-heat .rh-score { position:relative; z-index:1; display:block; margin-top:13px; font-size:22px; font-weight:800; letter-spacing:-.03em; line-height:1; }
+    .region-heat .rh-stores { position:relative; z-index:1; display:block; margin-top:5px; font-size:8px; color:rgba(255,255,255,.82); }
+    .region-heat .rh-trend { position:absolute; z-index:1; right:9px; top:9px; padding:2px 6px; border-radius:7px; background:rgba(255,255,255,.18); font-size:8px; font-weight:700; }
+
+    .rank-list { display:grid; gap:13px; }
+    .rank-row { display:grid; grid-template-columns:22px 62px minmax(90px,1fr) 62px; gap:11px; align-items:center; }
+    .rank-no { width:22px; height:22px; display:grid; place-items:center; border-radius:7px; color:var(--muted); background:#f0f3f7; font-size:9px; font-weight:700; }
+    .rank-no.top { color:#9b6512; background:#fff0c6; }
+    .rank-name { font-size:10px; font-weight:650; white-space:nowrap; }
+    .rank-track { height:8px; border-radius:20px; background:#eef2f7; overflow:hidden; }
+    .rank-track i { display:block; height:100%; border-radius:inherit; }
+    .rank-val { text-align:right; white-space:nowrap; }
+    .rank-val strong { display:block; font-size:11px; }
+    .rank-val span { display:block; margin-top:2px; color:var(--muted); font-size:8px; }
+
+    .age-chart { display:flex; align-items:flex-end; gap:16px; padding:8px 4px 0; }
+    .age-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:7px; min-width:0; }
+    .age-bar-wrap { width:100%; display:flex; align-items:flex-end; justify-content:center; height:150px; }
+    .age-bar { position:relative; width:58%; max-width:44px; min-height:14px; border-radius:9px 9px 4px 4px; background:linear-gradient(180deg,#5b93f4,#2871f2); }
+    .age-bar span { position:absolute; top:-18px; left:50%; transform:translateX(-50%); color:var(--muted); font-size:8px; white-space:nowrap; }
+    .age-col b { font-size:11px; color:var(--ink); }
+    .age-col small { color:var(--muted); font-size:8px; white-space:nowrap; }
+    .age-legend { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+    .age-legend div { padding:9px 12px; border-radius:10px; background:#f7f9fc; }
+    .age-legend span { display:block; color:var(--muted); font-size:8px; }
+    .age-legend strong { display:block; margin-top:4px; font-size:11px; }
+
+    .gender-wrap { display:grid; grid-template-columns:150px 1fr; gap:18px; align-items:center; }
+    .gender-donut { width:140px; height:140px; margin:auto; position:relative; display:grid; place-items:center; border-radius:50%; }
+    .gender-donut::before { content:""; position:absolute; width:96px; height:96px; border-radius:50%; background:#fff; }
+    .gender-donut div { position:relative; z-index:1; text-align:center; }
+    .gender-donut strong { display:block; font-size:20px; }
+    .gender-donut span { color:var(--muted); font-size:8px; }
+    .gender-compare { display:grid; gap:14px; }
+    .gender-item { display:flex; align-items:center; gap:10px; }
+    .gender-dot { width:9px; height:9px; border-radius:50%; flex:0 0 9px; }
+    .gender-copy { flex:1; min-width:0; }
+    .gender-copy strong { display:block; font-size:10px; }
+    .gender-copy span { display:block; margin-top:3px; color:var(--muted); font-size:8px; }
+    .gender-val { text-align:right; white-space:nowrap; }
+    .gender-val strong { display:block; font-size:11px; }
+    .gender-val span { display:block; margin-top:2px; color:var(--muted); font-size:8px; }
+
+    .altitude-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:11px; }
+    .altitude-card { position:relative; overflow:hidden; padding:15px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+    .altitude-card::after { content:""; position:absolute; width:76px; height:76px; right:-30px; top:-32px; border-radius:50%; background:currentColor; opacity:.07; }
+    .altitude-tag { position:relative; z-index:1; display:inline-flex; align-items:center; gap:5px; padding:4px 8px; border-radius:8px; font-size:8px; font-weight:700; }
+    .altitude-tag i { width:5px; height:5px; border-radius:50%; background:currentColor; }
+    .altitude-card > strong { position:relative; z-index:1; display:block; margin-top:13px; color:var(--ink); font-size:23px; letter-spacing:-.03em; }
+    .altitude-card > strong em { font-style:normal; color:var(--muted); font-size:9px; margin-left:3px; letter-spacing:0; }
+    .altitude-card p { position:relative; z-index:1; margin:6px 0 0; color:var(--muted); font-size:8px; }
+    .altitude-meta { position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:13px; padding-top:11px; border-top:1px solid var(--line); }
+    .altitude-meta div { padding:8px 9px; border-radius:8px; background:#f7f9fc; }
+    .altitude-meta span { display:block; color:var(--muted); font-size:8px; }
+    .altitude-meta strong { display:block; margin-top:3px; font-size:10px; font-weight:650; color:var(--ink); }
+
+    .insight-banner { display:flex; align-items:flex-start; gap:10px; margin-top:13px; padding:12px 14px; border-radius:12px; color:#5f6b7f; background:#eef3fb; font-size:9px; line-height:1.65; }
+    .insight-banner svg { width:16px; height:16px; flex:0 0 16px; color:var(--primary); margin-top:1px; }
+    .insight-banner b { color:var(--ink); }
+
+    @media(max-width:1160px){
+      .region-heat-grid { grid-template-columns:repeat(4,1fr); }
+      .altitude-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media(max-width:760px){
+      .region-heat-grid { grid-template-columns:repeat(2,1fr); }
+      .altitude-grid { grid-template-columns:1fr; }
+      .gender-wrap { grid-template-columns:1fr; }
+      .age-chart { gap:10px; }
+      .rank-row { grid-template-columns:20px 50px minmax(60px,1fr) 54px; }
+    }
+
+    /* ===== 核心指标与多维度对比 ===== */
+    .vital-overview { display:grid; grid-template-columns:230px 1fr; gap:18px; align-items:stretch; }
+    .vital-index { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:10px; padding:20px 16px; border-radius:16px; text-align:center; color:#fff; background:linear-gradient(150deg,#2065d8,#2f8eea 55%,#27aaa7); box-shadow:0 12px 26px rgba(40,113,242,.2); }
+    .vital-index strong { font-size:42px; line-height:1; letter-spacing:-.03em; }
+    .vital-index span { color:rgba(255,255,255,.85); font-size:10px; }
+    .vital-index p { margin:0; color:rgba(255,255,255,.72); font-size:8px; line-height:1.7; }
+    .vital-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+    .vital-card { padding:14px 13px; border:1px solid var(--line); border-radius:13px; background:#fff; }
+    .vital-card-head { display:flex; align-items:center; gap:7px; }
+    .vital-card-head svg { width:16px; height:16px; }
+    .vital-card-head span:last-child { color:var(--muted); font-size:9px; }
+    .vital-card > strong { display:block; margin-top:10px; font-size:22px; letter-spacing:-.02em; }
+    .vital-card > strong em { font-style:normal; color:var(--muted); font-size:9px; margin-left:2px; }
+    .vital-card p { margin:5px 0 0; color:var(--muted); font-size:8px; }
+    .vital-card .vt { display:inline-block; margin-top:7px; padding:2px 7px; border-radius:6px; font-size:8px; font-weight:700; }
+
+    .region-heat .rh-metrics { position:relative; z-index:1; display:flex; gap:10px; margin-top:9px; padding-top:9px; border-top:1px solid rgba(255,255,255,.22); }
+    .region-heat .rh-metrics span { font-size:8px; color:rgba(255,255,255,.82); }
+    .region-heat .rh-metrics b { font-weight:700; color:#fff; }
+
+    .gender-wrap { grid-template-columns:130px 1fr; gap:16px; align-items:start; }
+    .gender-donut { width:130px; height:130px; }
+    .gender-donut::before { width:88px; height:88px; }
+    .gender-donut strong { font-size:19px; }
+    .gender-metrics { display:grid; gap:1px; overflow:hidden; border:1px solid var(--line); border-radius:11px; background:var(--line); }
+    .gender-metric { display:grid; grid-template-columns:1fr 60px 60px; background:#fff; }
+    .gender-metric span { padding:8px 10px; color:var(--muted); font-size:8px; white-space:nowrap; }
+    .gender-metric b { padding:8px 10px; font-size:10px; text-align:center; white-space:nowrap; }
+    .gender-metric b + b { color:var(--muted); }
+    .gender-metric.gm-head span { color:var(--text); font-weight:700; }
+    .gender-metric.gm-head b { color:var(--primary); font-weight:700; background:#f7faff; }
+
+    .age-table { margin-top:14px; }
+
+    .region-chart { display:flex; align-items:flex-end; gap:12px; padding:14px 4px 0; }
+    .region-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:7px; min-width:0; }
+    .region-bar-wrap { width:100%; display:flex; align-items:flex-end; justify-content:center; height:180px; }
+    .region-bar { position:relative; width:54%; max-width:38px; min-height:12px; border-radius:8px 8px 3px 3px; }
+    .region-bar span { position:absolute; top:-18px; left:50%; transform:translateX(-50%); color:var(--muted); font-size:8px; white-space:nowrap; }
+    .region-col small { color:var(--muted); font-size:9px; white-space:nowrap; }
+    .region-table { margin-top:16px; }
+
+    @media(max-width:1160px){
+      .vital-overview { grid-template-columns:1fr; }
+      .vital-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media(max-width:760px){
+      .vital-grid { grid-template-columns:1fr 1fr; }
+      .gender-wrap { grid-template-columns:1fr; }
+      .gender-donut { margin:0 auto; }
+    }
   </style>
 </head>
 <body>
@@ -496,14 +626,17 @@
       arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
       money:'<circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8M12 6v12"/>',
       clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-      tongue:'<path d="M12 3c4.2 0 7.5 3 7.5 6.8 0 3.1-1.5 6.1-3.7 7.6v1.1a3.5 3.5 0 0 1-3.5 3.5h-.6a3.5 3.5 0 0 1-3.5-3.5v-1.1C6 15.9 4.5 12.9 4.5 9.8 4.5 6 7.8 3 12 3Z"/><path d="M8.2 11.6h7.6"/>'
+      tongue:'<path d="M12 3c4.2 0 7.5 3 7.5 6.8 0 3.1-1.5 6.1-3.7 7.6v1.1a3.5 3.5 0 0 1-3.5 3.5h-.6a3.5 3.5 0 0 1-3.5-3.5v-1.1C6 15.9 4.5 12.9 4.5 9.8 4.5 6 7.8 3 12 3Z"/><path d="M8.2 11.6h7.6"/>',
+      moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/>',
+      activity:'<path d="M3 12h4l2-6 4 12 2-6h6"/>'
     };
     const icon=(name,size=18)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.dashboard}</svg>`;
 
-    const state={page:'dashboard',range:'30d',deviceType:'all',deviceStatus:'all',deviceSearch:'',userSearch:'',oxygenType:'all',lifestyleDimension:'all',selectedReport:0,selectedTongue:0,drawerTab:'overview',toastTimer:null,openMenu:['overview','device','business','system']};
+    const state={page:'dashboard',range:'30d',haRange:'30d',haRegionMetric:'score',storeFilter:'all',storeUserSearch:'',deviceType:'all',deviceStatus:'all',deviceSearch:'',userSearch:'',oxygenType:'all',lifestyleDimension:'all',selectedReport:0,selectedTongue:0,drawerTab:'overview',toastTimer:null,openMenu:['overview','device','business','system']};
     const menuGroups=[
       { id:'overview', label:'运营总览', icon:'dashboard', children:[
-        { id:'dashboard', label:'数据驾驶舱', icon:'dashboard' }
+        { id:'dashboard', label:'数据驾驶舱', icon:'dashboard' },
+        { id:'health-analysis', label:'健康数据分析', icon:'chart' }
       ]},
       { id:'device', label:'设备管理', icon:'device', children:[
         { id:'oxygen-devices', label:'氧舱设备', icon:'oxygen' },
@@ -512,6 +645,7 @@
       ]},
       { id:'business', label:'业务管理', icon:'order', children:[
         { id:'users', label:'用户管理', icon:'users' },
+        { id:'store-users', label:'门店用户', icon:'users' },
         { id:'lifestyle', label:'客户行为及生活方式监管', icon:'heart' },
         { id:'oxygen', label:'氧舱使用记录', icon:'oxygen' },
         { id:'reports', label:'多模态检测', icon:'report' },
@@ -544,6 +678,20 @@
       {id:'U2026041132',name:'徐志明',phone:'186****2294',member:'黄金会员',device:'2台',oxygen:'41次',health:'良好',spent:'¥32,710',active:'昨天 18:42'},
       {id:'U2026030755',name:'王秀兰',phone:'158****9052',member:'铂金会员',device:'1台',oxygen:'54次',health:'需关注',spent:'¥21,886',active:'8月17日'},
       {id:'U2026010223',name:'郑海峰',phone:'135****7721',member:'普通会员',device:'1台',oxygen:'8次',health:'良好',spent:'¥4,960',active:'8月16日'}
+    ];
+    const storeList=['滨江店','城西店','宁波中心店','萧山体验店'];
+    const storeCity={ '滨江店':'杭州','城西店':'杭州','宁波中心店':'宁波','萧山体验店':'杭州' };
+    const storeUsers=[
+      {id:'SU2026081901',name:'林婉清',phone:'138****6628',store:'滨江店',member:'黄金会员',device:'2台',oxygen:'36次',visits:'24次',health:'良好',spent:'¥18,692',points:'8,620',blood:'98%',heart:'72 bpm',report:'82分',joined:'2025-03-12',active:'今天 09:38'},
+      {id:'SU2026081202',name:'周建国',phone:'139****1270',store:'滨江店',member:'铂金会员',device:'1台',oxygen:'28次',visits:'19次',health:'需关注',spent:'¥26,450',points:'12,480',blood:'96%',heart:'78 bpm',report:'76分',joined:'2024-11-08',active:'今天 08:56'},
+      {id:'SU2026072803',name:'陈雅琴',phone:'137****8431',store:'城西店',member:'普通会员',device:'1台',oxygen:'12次',visits:'8次',health:'良好',spent:'¥6,380',points:'3,120',blood:'98%',heart:'71 bpm',report:'84分',joined:'2025-06-20',active:'昨天 21:17'},
+      {id:'SU2026071504',name:'徐志明',phone:'186****2294',store:'城西店',member:'黄金会员',device:'2台',oxygen:'41次',visits:'30次',health:'良好',spent:'¥32,710',points:'15,230',blood:'97%',heart:'70 bpm',report:'88分',joined:'2024-09-15',active:'昨天 18:42'},
+      {id:'SU2026063005',name:'王秀兰',phone:'158****9052',store:'宁波中心店',member:'铂金会员',device:'1台',oxygen:'54次',visits:'38次',health:'需关注',spent:'¥21,886',points:'10,940',blood:'95%',heart:'76 bpm',report:'71分',joined:'2024-06-02',active:'8月17日'},
+      {id:'SU2026061806',name:'郑海峰',phone:'135****7721',store:'宁波中心店',member:'普通会员',device:'1台',oxygen:'8次',visits:'5次',health:'良好',spent:'¥4,960',points:'1,860',blood:'98%',heart:'73 bpm',report:'84分',joined:'2025-05-18',active:'8月16日'},
+      {id:'SU2026060507',name:'赵雅芝',phone:'159****3318',store:'萧山体验店',member:'黄金会员',device:'1台',oxygen:'22次',visits:'15次',health:'良好',spent:'¥12,380',points:'6,420',blood:'97%',heart:'72 bpm',report:'85分',joined:'2025-02-25',active:'8月15日'},
+      {id:'SU2026052208',name:'孙丽娟',phone:'137****6652',store:'滨江店',member:'普通会员',device:'2台',oxygen:'19次',visits:'12次',health:'良好',spent:'¥9,260',points:'4,580',blood:'98%',heart:'71 bpm',report:'86分',joined:'2025-04-10',active:'8月14日'},
+      {id:'SU2026050809',name:'吴国华',phone:'188****9021',store:'萧山体验店',member:'铂金会员',device:'1台',oxygen:'31次',visits:'22次',health:'需关注',spent:'¥28,940',points:'13,650',blood:'94%',heart:'79 bpm',report:'72分',joined:'2024-08-30',active:'8月13日'},
+      {id:'SU2026042610',name:'冯静怡',phone:'186****4477',store:'城西店',member:'普通会员',device:'1台',oxygen:'15次',visits:'10次',health:'良好',spent:'¥7,680',points:'3,740',blood:'97%',heart:'72 bpm',report:'83分',joined:'2025-05-06',active:'8月12日'}
     ];
     const oxygenRecords=[
       {id:'OT202608190086',user:'林婉清',title:'家庭氧舱使用',type:'家庭氧疗',device:'泰瑞智能氧舱 T3',place:'客厅 · TR-T3-02861',mode:'舒缓模式',duration:'45分钟',before:'95%',after:'98%',time:'今天 09:02',status:'done',summary:[['平均氧浓度','29.8%'],['峰值压力','1.32 kPa'],['平均心率','72 bpm'],['平均呼吸','16 次/分']],sensors:[['温度','24.6','℃'],['湿度','52','%RH'],['负氧离子','1.2','万个/cm³'],['甲醛','0.03','mg/m³'],['CO₂','640','ppm'],['PM2.5','12','μg/m³']]},
@@ -619,6 +767,33 @@
       return `${pageHead('用户管理','汇总C端用户、会员、设备、健康、氧疗和消费数据，形成统一用户档案。',`<button class="btn" data-action="export">${icon('export')}导出用户</button>`)}<div class="stats-grid">${statCard('blue','平台注册用户','8,426','人','+12.6%','users')}${statCard('cyan','本月活跃用户','4,892','人','+16.4%','heart')}${statCard('purple','已绑定设备用户','2,084','人','+10.8%','device')}${statCard('orange','会员用户','5,316','人','+9.5%','shield')}</div><div class="toolbar card"><div class="search-field">${icon('search')}<input class="field" id="userSearch" value="${state.userSearch}" placeholder="搜索姓名、手机号或用户编号" data-action="user-search"></div><select class="select"><option>全部会员等级</option><option>普通会员</option><option>黄金会员</option><option>铂金会员</option></select><select class="select"><option>全部健康状态</option><option>状态良好</option><option>需关注</option></select><div class="toolbar-spacer"></div><span class="result-count">用户数据已脱敏展示</span></div><section class="page-card card"><div class="table-head"><h2>用户列表</h2><span>综合数据来源：小程序、设备、商城和门店系统</span></div><div class="table-wrap"><table><thead><tr><th>用户</th><th>会员等级</th><th>绑定设备</th><th>氧疗次数</th><th>健康状态</th><th>累计消费</th><th>最近活跃</th><th>操作</th></tr></thead><tbody>${filtered.map((u,i)=>`<tr class="clickable" data-action="user-detail" data-user="${u.id}"><td><div class="cell-main"><span class="cell-avatar" style="color:var(--purple);background:var(--purple-soft)">${u.name.slice(0,1)}</span><div class="cell-copy"><strong>${u.name}</strong><span>${u.phone} · ${u.id}</span></div></div></td><td>${u.member}</td><td>${u.device}</td><td>${u.oxygen}</td><td><span class="status ${u.health==='良好'?'online':'warning'}">${u.health}</span></td><td>${u.spent}</td><td>${u.active}</td><td><button class="btn ghost small" data-action="user-detail" data-user="${u.id}">${icon('eye')}用户档案</button></td></tr>`).join('')}</tbody></table></div><div class="pagination"><span>显示 1–${filtered.length} 条，共 8,426 条</span><div class="page-buttons"><button>‹</button><button class="active">1</button><button>2</button><button>3</button><button>›</button></div></div></section>`;
     }
 
+    function storeUsersPage(){
+      const filtered=storeUsers.filter(u=>state.storeFilter==='all'||u.store===state.storeFilter);
+      return `${pageHead('门店用户','按所属门店维度汇总线下门店用户，支持按门店快速筛选。',`<button class="btn" data-action="export">${icon('export')}导出门店用户</button>`)}<div class="stats-grid">${statCard('blue','门店用户总数','4,826','人','+12.4%','users')}${statCard('cyan','覆盖门店','4','家','+1 家','store')}${statCard('purple','本月新增用户','326','人','+8.6%','user')}${statCard('orange','需关注用户','418','人','-5.2%','alert')}</div><div class="toolbar card"><select class="select" data-action="store-filter"><option value="all">全部门店</option>${storeList.map(s=>`<option value="${s}" ${state.storeFilter===s?'selected':''}>${s}</option>`).join('')}</select><div class="search-field">${icon('search')}<input class="field" value="${state.storeUserSearch}" placeholder="搜索姓名、手机号或编号" data-action="store-search"></div><select class="select"><option>全部会员等级</option><option>普通会员</option><option>黄金会员</option><option>铂金会员</option></select><div class="toolbar-spacer"></div><span class="result-count">共 ${filtered.length} 条门店用户记录</span></div><section class="page-card card"><div class="table-head"><h2>门店用户列表</h2><span>用户归属门店数据同步自原门店系统</span></div><div class="table-wrap"><table><thead><tr><th>用户</th><th>所属门店</th><th>会员等级</th><th>绑定设备</th><th>氧疗次数</th><th>健康状态</th><th>累计消费</th><th>最近活跃</th><th>操作</th></tr></thead><tbody>${filtered.map(u=>`<tr class="clickable" data-action="store-user-detail" data-id="${u.id}"><td><div class="cell-main"><span class="cell-avatar" style="color:var(--cyan);background:var(--cyan-soft)">${u.name.slice(0,1)}</span><div class="cell-copy"><strong>${u.name}</strong><span>${u.phone} · ${u.id}</span></div></div></td><td><span style="display:inline-flex;align-items:center;gap:5px;color:var(--text);font-weight:600">${icon('store',13)}${u.store}</span></td><td>${u.member}</td><td>${u.device}</td><td>${u.oxygen}</td><td><span class="status ${u.health==='良好'?'online':'warning'}">${u.health}</span></td><td>${u.spent}</td><td>${u.active}</td><td><button class="btn ghost small" data-action="store-user-detail" data-id="${u.id}">${icon('eye')}档案</button></td></tr>`).join('')||'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">该门店暂无用户数据</td></tr>'}</tbody></table></div><div class="pagination"><span>显示 1–${filtered.length} 条，共 ${filtered.length} 条</span><div class="page-buttons"><button>‹</button><button class="active">1</button><button>›</button></div></div></section>`;
+    }
+
+    function storeUserDetail(id){
+      const u=storeUsers.find(x=>x.id===id)||storeUsers[0];
+      const city=storeCity[u.store]||'杭州';
+      openDrawer('门店用户档案',`<div class="detail-hero" style="background:linear-gradient(135deg,#167a8a,#24aa9c 55%,#5f67d8)"><div class="detail-hero-top"><div><strong>${u.name}</strong><p>${u.phone} · ${u.id}</p></div><span class="status online" style="background:rgba(255,255,255,.16);color:#fff">${u.member}</span></div><div class="detail-kpis"><div><span>累计到店</span><strong>${u.visits}</strong></div><div><span>氧疗次数</span><strong>${u.oxygen}</strong></div><div><span>累计消费</span><strong>${u.spent}</strong></div></div></div>
+      <div class="drawer-tabs"><button class="active" data-action="store-drawer-tab" data-tab="profile">门店档案</button><button data-action="store-drawer-tab" data-tab="health">健康数据</button><button data-action="store-drawer-tab" data-tab="service">服务记录</button><button data-action="store-drawer-tab" data-tab="consume">消费记录</button></div>
+      <div class="drawer-tab-panel" data-panel="profile">
+        <div class="detail-section"><h3>门店归属</h3><div class="detail-info"><div><span>所属门店</span><strong>${u.store}</strong></div><div><span>门店城市</span><strong>${city}</strong></div><div><span>会员等级</span><strong>${u.member}</strong></div><div><span>入会时间</span><strong>${u.joined}</strong></div><div><span>最近到店</span><strong>${u.active}</strong></div><div><span>会员积分</span><strong>${u.points}</strong></div></div></div>
+        <div class="detail-section"><h3>绑定设备</h3><div class="alert-list"><div class="alert-item"><span class="alert-icon" style="color:var(--cyan);background:var(--cyan-soft)">${icon('device')}</span><div class="alert-copy"><strong>${u.device}</strong><span>泰瑞智能氧舱 · 健康手环 · 智能戒指</span></div></div></div></div>
+      </div>
+      <div class="drawer-tab-panel" data-panel="health" style="display:none">
+        <div class="detail-section"><h3>健康概览</h3><div class="detail-info"><div><span>健康状态</span><strong style="color:${u.health==='良好'?'var(--green)':'var(--orange)'}">${u.health}</strong></div><div><span>最近血氧</span><strong>${u.blood}</strong></div><div><span>静息心率</span><strong>${u.heart}</strong></div><div><span>最近检测报告</span><strong>${u.report}</strong></div></div></div>
+        <div class="detail-section"><h3>近7日血氧趋势</h3><svg class="mini-trend" viewBox="0 0 480 120"><path d="M18 84 C70 82,98 86,138 78 S210 66,255 62 S340 44,385 40 S430 34,462 30" fill="none" stroke="#1eb6a5" stroke-width="3"/><path d="M18 84 C70 82,98 86,138 78 S210 66,255 62 S340 44,385 40 S430 34,462 30 L462 110 L18 110Z" fill="#1eb6a5" opacity=".1"/></svg></div>
+      </div>
+      <div class="drawer-tab-panel" data-panel="service" style="display:none">
+        <div class="detail-section"><h3>门店服务记录</h3><div class="alert-list"><div class="alert-item"><span class="alert-icon" style="color:var(--primary);background:var(--primary-soft)">${icon('oxygen')}</span><div class="alert-copy"><strong>专业舒缓氧疗 · 45分钟</strong><span>${u.active} · ${u.store}</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--purple);background:var(--purple-soft)">${icon('tongue')}</span><div class="alert-copy"><strong>AI 舌诊检测</strong><span>体质辨识：${u.health==='良好'?'平和质，状态平稳':'需关注体质'}</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--cyan);background:var(--cyan-soft)">${icon('report')}</span><div class="alert-copy"><strong>多模态综合检测</strong><span>综合评估 ${u.report} · 24 项指标</span></div></div></div></div>
+      </div>
+      <div class="drawer-tab-panel" data-panel="consume" style="display:none">
+        <div class="detail-section"><h3>消费概览</h3><div class="detail-info"><div><span>累计消费</span><strong>${u.spent}</strong></div><div><span>会员积分</span><strong>${u.points}</strong></div><div><span>氧疗次数</span><strong>${u.oxygen}</strong></div><div><span>累计到店</span><strong>${u.visits}</strong></div></div></div>
+        <div class="detail-section"><h3>最近消费</h3><div class="alert-list"><div class="alert-item"><span class="alert-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('money')}</span><div class="alert-copy"><strong>门店氧疗服务</strong><span>${u.active} · ${u.store} · 已核销</span></div></div><div class="alert-item"><span class="alert-icon" style="color:var(--orange);background:var(--orange-soft)">${icon('order')}</span><div class="alert-copy"><strong>健康检测套餐</strong><span>舌诊 + 多模态检测 · 已完成</span></div></div></div></div>
+      </div>`);
+    }
+
     function lifeCell(item){
       return `<div class="life-cell ${item.done?'':'missing'}"><strong>${item.done?item.value:'未打卡'}</strong><span>${item.source}</span></div>`;
     }
@@ -665,7 +840,108 @@
       return `${pageHead(cfg.title,cfg.desc,`<button class="btn" data-action="export">${icon('export')}导出</button>`)}<section class="page-card card"><div class="table-head"><h2>${cfg.title}</h2><span>共 ${cfg.rows.length} 条示例数据</span></div><div class="table-wrap"><table><thead><tr>${cfg.cols.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${cfg.rows.map(row=>`<tr class="clickable" data-action="toast" data-message="${cfg.title}详情已打开">${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`;
     }
 
-    const renderers={dashboard:dashboardPage,'oxygen-devices':()=>deviceCategoryPage('oxygen'),'band-devices':()=>deviceCategoryPage('band'),'ring-devices':()=>deviceCategoryPage('ring'),users:usersPage,lifestyle:lifestylePage,oxygen:oxygenPage,reports:reportsPage,tongue:tonguePage,roles:()=>systemConfigPage('roles'),accounts:()=>systemConfigPage('accounts'),params:()=>systemConfigPage('params'),dict:()=>systemConfigPage('dict')};
+    const healthAnalysis = {
+      vitals: [
+        { name:'血氧饱和度', value:'96.8', unit:'%', range:'正常 95–100%', trend:'+0.3%', color:'var(--cyan)', icon:'oxygen' },
+        { name:'静息心率', value:'72', unit:'bpm', range:'正常 60–100', trend:'-1 bpm', color:'var(--red)', icon:'heart' },
+        { name:'日均睡眠', value:'7.2', unit:'小时', range:'正常 7–9 小时', trend:'+0.2h', color:'var(--purple)', icon:'moon' },
+        { name:'日均步数', value:'6,842', unit:'步', range:'达标 ≥6000 步', trend:'+4.6%', color:'var(--green)', icon:'activity' }
+      ],
+      regions: [
+        { name:'华东', altitude:'低海拔', stores:128, score:89.2, blood:97.4, heart:70, sleep:7.5, steps:7450, attention:7.8, trend:'+1.2%' },
+        { name:'华南', altitude:'低海拔', stores:74, score:88.4, blood:97.1, heart:71, sleep:7.3, steps:7120, attention:8.1, trend:'+0.9%' },
+        { name:'华中', altitude:'低/中海拔', stores:62, score:87.8, blood:96.8, heart:72, sleep:7.2, steps:6890, attention:8.6, trend:'+0.7%' },
+        { name:'华北', altitude:'低/中海拔', stores:58, score:87.5, blood:96.9, heart:72, sleep:7.1, steps:6680, attention:8.9, trend:'+0.6%' },
+        { name:'东北', altitude:'低海拔', stores:40, score:86.9, blood:96.7, heart:71, sleep:7.0, steps:6420, attention:9.4, trend:'+0.5%' },
+        { name:'西南', altitude:'中高海拔', stores:46, score:84.6, blood:94.8, heart:75, sleep:6.8, steps:5860, attention:14.6, trend:'+0.4%' },
+        { name:'西北', altitude:'高海拔', stores:32, score:82.4, blood:93.6, heart:78, sleep:6.5, steps:5120, attention:18.2, trend:'-0.2%' }
+      ],
+      provinces: [
+        { name:'浙江', score:89.2, blood:97.4, heart:71, sleep:7.5, attention:8.2 },
+        { name:'上海', score:90.1, blood:97.5, heart:70, sleep:7.4, attention:7.6 },
+        { name:'广东', score:88.6, blood:97.2, heart:72, sleep:7.3, attention:8.4 },
+        { name:'江苏', score:88.1, blood:97.0, heart:72, sleep:7.3, attention:8.8 },
+        { name:'四川', score:86.4, blood:95.8, heart:74, sleep:7.1, attention:10.8 },
+        { name:'云南', score:83.1, blood:94.2, heart:76, sleep:6.8, attention:15.2 },
+        { name:'青海', score:81.8, blood:93.4, heart:78, sleep:6.5, attention:17.6 },
+        { name:'西藏', score:77.2, blood:90.6, heart:82, sleep:6.1, attention:26.4 }
+      ],
+      gender: {
+        female:{ pct:52.6, score:88.9, blood:97.1, heart:74, sleep:7.3, steps:7240 },
+        male:{ pct:47.4, score:86.8, blood:96.5, heart:71, sleep:7.1, steps:8650 }
+      },
+      ageGroups: [
+        { label:'<18岁', count:2840, score:91.2, blood:98.0, heart:78, sleep:8.2, attention:6.8 },
+        { label:'18–30岁', count:8640, score:90.6, blood:97.8, heart:70, sleep:7.6, attention:7.2 },
+        { label:'31–45岁', count:16280, score:88.4, blood:97.2, heart:71, sleep:7.3, attention:9.6 },
+        { label:'46–60岁', count:21540, score:85.7, blood:96.4, heart:72, sleep:6.9, attention:14.2 },
+        { label:'60岁以上', count:18460, score:82.3, blood:95.6, heart:74, sleep:6.4, attention:19.8 }
+      ],
+      altitudes: [
+        { tag:'低海拔', range:'< 500m', color:'#18a878', bg:'#e9f8f2', stores:289, blood:97.3, heart:71, sleep:7.4, score:88.9, attention:8.6 },
+        { tag:'中海拔', range:'500–1500m', color:'#f0a72e', bg:'#fff6e6', stores:52, blood:96.2, heart:73, sleep:7.2, score:87.1, attention:10.4 },
+        { tag:'高海拔', range:'1500–3000m', color:'#f5914f', bg:'#fff2e8', stores:38, blood:94.5, heart:76, sleep:6.8, score:83.6, attention:15.8 },
+        { tag:'极高海拔', range:'> 3000m', color:'#e85b66', bg:'#fff0f1', stores:14, blood:91.8, heart:80, sleep:6.2, score:79.4, attention:24.6 }
+      ],
+      stores: [
+        { name:'杭州滨江店', province:'浙江', city:'杭州', alt:'18m', level:'低海拔', score:89.8, blood:97.5, heart:71, sleep:7.5, attention:8.2, status:'良好' },
+        { name:'上海静安店', province:'上海', city:'上海', alt:'4m', level:'低海拔', score:90.1, blood:97.4, heart:70, sleep:7.4, attention:7.6, status:'良好' },
+        { name:'广州天河店', province:'广东', city:'广州', alt:'21m', level:'低海拔', score:89.3, blood:97.2, heart:72, sleep:7.3, attention:8.4, status:'良好' },
+        { name:'成都武侯店', province:'四川', city:'成都', alt:'540m', level:'中海拔', score:86.4, blood:95.8, heart:74, sleep:7.1, attention:10.8, status:'良好' },
+        { name:'昆明五华店', province:'云南', city:'昆明', alt:'1890m', level:'高海拔', score:83.1, blood:94.2, heart:76, sleep:6.8, attention:15.2, status:'关注' },
+        { name:'兰州城关店', province:'甘肃', city:'兰州', alt:'1520m', level:'中高海拔', score:82.9, blood:94.8, heart:75, sleep:6.9, attention:13.5, status:'关注' },
+        { name:'西宁城西店', province:'青海', city:'西宁', alt:'2261m', level:'高海拔', score:81.8, blood:93.4, heart:78, sleep:6.5, attention:17.6, status:'关注' },
+        { name:'拉萨城关店', province:'西藏', city:'拉萨', alt:'3650m', level:'极高海拔', score:77.2, blood:90.6, heart:82, sleep:6.1, attention:26.4, status:'重点' }
+      ]
+    };
+    function healthAnalysisPage(){
+      const ha = healthAnalysis, g = ha.gender;
+      const regionGrads = [
+        'linear-gradient(145deg,#2e7df5,#27a7c2)',
+        'linear-gradient(145deg,#3a8ef0,#2cb4a3)',
+        'linear-gradient(145deg,#4b92e8,#37a2a8)',
+        'linear-gradient(145deg,#5a8fda,#4a97a0)',
+        'linear-gradient(145deg,#6a86c6,#5b8a92)',
+        'linear-gradient(145deg,#c9825a,#e0994f)',
+        'linear-gradient(145deg,#d8665e,#e88955)'
+      ];
+      const maxAge = Math.max(...ha.ageGroups.map(a=>a.count));
+      const attentionColor = v => v>=20?'var(--red)':v>=13?'var(--orange)':'var(--green)';
+      const regionMetrics = [
+        { key:'score', label:'健康指数', unit:'' },
+        { key:'blood', label:'血氧', unit:'%' },
+        { key:'heart', label:'心率', unit:'bpm' },
+        { key:'sleep', label:'睡眠', unit:'h' },
+        { key:'steps', label:'步数', unit:'步' }
+      ];
+      const regionBarColors = ['#2e7df5','#3a8ef0','#4b92e8','#5a8fda','#6a86c6','#c9825a','#d8665e'];
+      const regionMetric = regionMetrics.find(m=>m.key===state.haRegionMetric) || regionMetrics[0];
+      const regionMax = Math.max(...ha.regions.map(r=>r[regionMetric.key]));
+      const actions = `<div class="range-switch">${[['7d','近7天'],['30d','近30天'],['90d','近90天']].map(x=>`<button class="${state.haRange===x[0]?'active':''}" data-action="ha-range" data-range="${x[0]}">${x[1]}</button>`).join('')}</div><button class="btn" data-action="export">${icon('export')}导出分析</button>`;
+      return `${pageHead('健康数据分析','从地域、年龄、性别、海拔等维度，分析全国门店用户的核心健康指标（血氧、心率、睡眠、步数）。',actions)}
+      <div class="stats-grid">${statCard('blue','覆盖省份','28','个','+2 个','store')}${statCard('cyan','健康数据样本','67,440','份','+16.2%','database')}${statCard('purple','平均血氧饱和度','96.8','%','+0.3%','oxygen')}${statCard('orange','日均睡眠时长','7.2','小时','+0.2h','clock')}</div>
+
+      <section class="panel card" style="margin-bottom:14px"><div class="panel-head"><div><h2>核心健康指标</h2><p>由手环、戒指等智能设备采集，综合评估得出健康指数</p></div><span class="status online">实时同步</span></div>
+      <div class="vital-overview"><div class="vital-index"><strong>87.2</strong><span>全国综合健康指数</span><p>由血氧、心率、睡眠、活动四项核心指标综合评估得出</p></div><div class="vital-grid">${ha.vitals.map(v=>`<div class="vital-card"><div class="vital-card-head"><span style="color:${v.color}">${icon(v.icon)}</span><span>${v.name}</span></div><strong>${v.value}<em>${v.unit}</em></strong><p>${v.range}</p><span class="vt" style="color:var(--green);background:var(--green-soft)">${v.trend}</span></div>`).join('')}</div></div></section>
+
+      <section class="panel card" style="margin-bottom:14px"><div class="panel-head"><div><h2>地域健康概览</h2><p>全国七大区域核心健康指标与样本分布</p></div><div class="legend"><span><i style="background:var(--primary)"></i>健康指数高</span><span><i style="background:var(--orange)"></i>健康指数偏低</span></div></div>
+      <div class="region-heat-grid">${ha.regions.map((r,i)=>`<div class="region-heat" style="background:${regionGrads[i]}"><span class="rh-trend">${r.trend}</span><strong>${r.name}</strong><span class="rh-alt">${r.altitude} · ${r.stores} 家门店</span><span class="rh-score">${r.score}</span><span class="rh-stores">健康指数</span><div class="rh-metrics"><span>血氧 <b>${r.blood}%</b></span><span>睡眠 <b>${r.sleep}h</b></span></div></div>`).join('')}</div></section>
+
+      <section class="panel card" style="margin-bottom:14px"><div class="panel-head"><div><h2>地域核心指标对比</h2><p>七大区域核心指标平均数对比（点击切换指标）</p></div><div class="range-switch">${regionMetrics.map(m=>`<button class="${state.haRegionMetric===m.key?'active':''}" data-action="ha-region-metric" data-metric="${m.key}">${m.label}</button>`).join('')}</div></div>
+      <div class="region-chart">${ha.regions.map((r,i)=>{const v=r[regionMetric.key];return `<div class="region-col"><div class="region-bar-wrap"><div class="region-bar" style="height:${Math.max(12,Math.round(v/regionMax*100))}%;background:${regionBarColors[i]}"><span>${regionMetric.key==='steps'?(v/1000).toFixed(1)+'k':v+(regionMetric.unit||'')}</span></div></div><small>${r.name}</small></div>`;}).join('')}</div>
+      <div class="region-table table-wrap"><table><thead><tr><th>地域</th><th>海拔</th><th>血氧</th><th>静息心率</th><th>日均睡眠</th><th>日均步数</th><th>健康指数</th><th>需关注</th></tr></thead><tbody>${ha.regions.map(r=>`<tr><td><strong>${r.name}</strong></td><td>${r.altitude}</td><td>${r.blood}%</td><td>${r.heart} bpm</td><td>${r.sleep}h</td><td>${r.steps.toLocaleString()}</td><td>${r.score}</td><td style="color:${attentionColor(r.attention)}">${r.attention}%</td></tr>`).join('')}</tbody></table></div></section>
+
+      <div class="two-col" style="margin-bottom:14px">
+        <section class="page-card card"><div class="table-head"><h2>省份健康排行</h2><span>Top 8 省份核心健康指标对比</span></div><div class="table-wrap"><table><thead><tr><th>省份</th><th>健康指数</th><th>血氧</th><th>静息心率</th><th>睡眠</th><th>需关注</th></tr></thead><tbody>${ha.provinces.map(p=>`<tr class="clickable" data-action="toast" data-message="${p.name}省份健康数据详情已打开"><td><div class="cell-main"><span class="cell-avatar">${p.name.slice(0,1)}</span><div class="cell-copy"><strong>${p.name}</strong><span>门店汇总</span></div></div></td><td><strong>${p.score}</strong></td><td>${p.blood}%</td><td>${p.heart} bpm</td><td>${p.sleep}h</td><td style="color:${attentionColor(p.attention)}">${p.attention}%</td></tr>`).join('')}</tbody></table></div></section>
+        <section class="panel card"><div class="panel-head"><div><h2>性别分布</h2><p>男女用户核心健康指标对比</p></div></div><div class="gender-wrap"><div class="gender-donut" style="background:conic-gradient(var(--cyan) 0 ${g.female.pct}%, var(--purple) ${g.female.pct}% 100%)"><div><strong>${g.female.pct}%</strong><span>女性占比</span></div></div><div class="gender-compare"><div class="gender-metrics"><div class="gender-metric gm-head"><span>核心指标</span><b>女性</b><b>男性</b></div><div class="gender-metric"><span>健康指数</span><b>${g.female.score}</b><b>${g.male.score}</b></div><div class="gender-metric"><span>血氧饱和度</span><b>${g.female.blood}%</b><b>${g.male.blood}%</b></div><div class="gender-metric"><span>静息心率</span><b>${g.female.heart}</b><b>${g.male.heart}</b></div><div class="gender-metric"><span>日均睡眠</span><b>${g.female.sleep}h</b><b>${g.male.sleep}h</b></div><div class="gender-metric"><span>日均步数</span><b>${g.female.steps.toLocaleString()}</b><b>${g.male.steps.toLocaleString()}</b></div></div><div class="insight-banner" style="margin-top:12px">${icon('chart')}<div>女性用户健康指数高于男性 <b>2.1 分</b>，睡眠与血氧更优；男性日均步数更高。</div></div></div></div></section>
+      </div>
+
+      <section class="panel card" style="margin-bottom:14px"><div class="panel-head"><div><h2>年龄分布</h2><p>各年龄段样本量与核心健康指标</p></div><div class="legend"><span><i style="background:var(--primary)"></i>样本人数</span><span><i style="background:var(--orange)"></i>需关注占比</span></div></div><div class="age-chart">${ha.ageGroups.map(a=>`<div class="age-col"><div class="age-bar-wrap"><div class="age-bar" style="height:${Math.max(14,Math.round(a.count/maxAge*100))}%"><span>${(a.count/1000).toFixed(1)}k</span></div></div><b>${a.score}</b><small>${a.label}</small></div>`).join('')}</div><div class="age-table table-wrap"><table><thead><tr><th>年龄段</th><th>样本量</th><th>健康指数</th><th>血氧</th><th>静息心率</th><th>睡眠</th><th>需关注</th></tr></thead><tbody>${ha.ageGroups.map(a=>`<tr><td><strong>${a.label}</strong></td><td>${a.count.toLocaleString()}</td><td>${a.score}</td><td>${a.blood}%</td><td>${a.heart} bpm</td><td>${a.sleep}h</td><td style="color:${attentionColor(a.attention)}">${a.attention}%</td></tr>`).join('')}</tbody></table></div></section>
+
+      <section class="panel card" style="margin-bottom:14px"><div class="panel-head"><div><h2>海拔与血氧关系</h2><p>门店所处海拔对血氧、睡眠与健康指数的影响</p></div><span class="status warning">氧疗特色维度</span></div><div class="altitude-grid">${ha.altitudes.map(a=>`<div class="altitude-card" style="color:${a.color}"><span class="altitude-tag" style="color:${a.color};background:${a.bg}"><i></i>${a.tag}</span><strong>${a.blood}<em>% 血氧</em></strong><p>${a.range} · ${a.stores} 家门店</p><div class="altitude-meta"><div><span>静息心率</span><strong>${a.heart} bpm</strong></div><div><span>日均睡眠</span><strong>${a.sleep}h</strong></div><div><span>健康指数</span><strong>${a.score} 分</strong></div><div><span>需关注</span><strong style="color:${attentionColor(a.attention)}">${a.attention}%</strong></div></div></div>`).join('')}</div><div class="insight-banner">${icon('chart')}<div><b>洞察：</b>海拔每升高约 1000 米，门店用户平均血氧饱和度下降 2–3%、日均睡眠缩短约 0.3 小时。高原地区用户是氧疗服务的高价值人群，建议在西南、西北等高海拔门店加大氧疗服务与健康随访资源配置。</div></div></section>`;
+    }
+
+    const renderers={dashboard:dashboardPage,'health-analysis':healthAnalysisPage,'oxygen-devices':()=>deviceCategoryPage('oxygen'),'band-devices':()=>deviceCategoryPage('band'),'ring-devices':()=>deviceCategoryPage('ring'),users:usersPage,'store-users':storeUsersPage,lifestyle:lifestylePage,oxygen:oxygenPage,reports:reportsPage,tongue:tonguePage,roles:()=>systemConfigPage('roles'),accounts:()=>systemConfigPage('accounts'),params:()=>systemConfigPage('params'),dict:()=>systemConfigPage('dict')};
     function renderNav(){document.getElementById('mainNav').innerHTML=menuGroups.map(g=>{const open=state.openMenu.includes(g.id);const hasActive=g.children.some(c=>c.id===state.page);return `<div class="nav-group ${open?'open':''}"><button class="nav-item nav-parent ${hasActive?'active-parent':''}" data-action="toggle-menu" data-group="${g.id}"><span class="nav-icon">${icon(g.icon)}</span><span class="nav-label">${g.label}</span><span class="nav-caret">${icon('chevron',14)}</span></button><div class="nav-sub">${g.children.map(c=>`<button class="nav-item nav-child ${state.page===c.id?'active':''}" data-action="go" data-page="${c.id}"><span class="nav-icon">${icon(c.icon)}</span><span class="nav-label">${c.label}</span>${c.badge?`<span class="nav-badge">${c.badge}</span>`:''}</button>`).join('')}</div></div>`;}).join('');}
     function render(){renderNav();document.getElementById('content').innerHTML=renderers[state.page]();}
     function navigate(page){if(!renderers[page])return;state.page=page;render();document.querySelector('.content').scrollTop=0;window.scrollTo({top:0,behavior:'smooth'});}
@@ -691,9 +967,13 @@
       if(a==='toggle-menu'){const g=t.dataset.group;state.openMenu=state.openMenu.includes(g)?state.openMenu.filter(x=>x!==g):[...state.openMenu,g];renderNav();}
       if(a==='collapse')document.getElementById('appShell').classList.toggle('collapsed');
       if(a==='range'){state.range=t.dataset.range;render();}
+      if(a==='ha-range'){state.haRange=t.dataset.range;render();}
+      if(a==='ha-region-metric'){state.haRegionMetric=t.dataset.metric;render();}
       if(a==='export')toast('报表导出任务已创建');
       if(a==='device-detail')deviceDetail(t.dataset.id);
       if(a==='user-detail')userDetail(t.dataset.user);
+      if(a==='store-user-detail')storeUserDetail(t.dataset.id);
+      if(a==='store-drawer-tab'){const tab=t.dataset.tab;document.querySelectorAll('.drawer-tabs button').forEach(b=>b.classList.toggle('active',b===t));document.querySelectorAll('.drawer-tab-panel').forEach(p=>{p.style.display=p.dataset.panel===tab?'':'none';});}
       if(a==='lifestyle-detail')lifestyleDetail(t.dataset.user);
       if(a==='lifestyle-filter'){state.lifestyleDimension=t.dataset.type;render();}
       if(a==='oxygen-detail')oxygenDetail(t.dataset.record);
@@ -714,6 +994,7 @@
       const t=e.target;
       if(t.dataset.action==='device-type'){state.deviceType=t.value;render();}
       if(t.dataset.action==='device-status'){state.deviceStatus=t.value;render();}
+      if(t.dataset.action==='store-filter'){state.storeFilter=t.value;render();}
     });
     document.addEventListener('input',e=>{
       const t=e.target;
@@ -728,6 +1009,11 @@
       }
       if(t.dataset.action==='user-search'){
         state.userSearch=t.value;
+        const key=t.value.trim().toLowerCase();
+        document.querySelectorAll('tbody tr.clickable').forEach(row=>{row.style.display=!key||row.innerText.toLowerCase().includes(key)?'':'none';});
+      }
+      if(t.dataset.action==='store-search'){
+        state.storeUserSearch=t.value;
         const key=t.value.trim().toLowerCase();
         document.querySelectorAll('tbody tr.clickable').forEach(row=>{row.style.display=!key||row.innerText.toLowerCase().includes(key)?'':'none';});
       }
